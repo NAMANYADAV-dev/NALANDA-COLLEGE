@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design tokens — single source of truth for the brand palette.
+   Tailwind (tailwind.config.ts) maps these to semantic color
+   utilities like `bg-surface` / `text-navy`. Dark mode simply
+   overrides the same variables under [data-theme="dark"], so the
+   whole UI re-themes without per-component dark: variants.
+   Palette: navy #1B3A6B · gold #B8862B · Poppins + Inter
+   ============================================================ */
+:root {
+  --color-navy: #1b3a6b;
+  --color-navy-deep: #12294d;
+  --color-navy-darkest: #0e1a2e;
+  --color-gold: #b8862b;
+  --color-gold-hi: #e7c579;
+  --color-gold-hover: #9c701f;
+
+  --color-text: #222a35;
+  --color-muted: #5a6472;
+  --color-heading: #1b3a6b;
+
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-section-alt: #eef2f7;
+  --color-band: #12294d;
+  --color-border: #eef2f7;
+  --color-chip-bg: #eef2f7;
+  --color-faint-gold: #faf3e3;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.1);
+  --shadow-nav: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='dark'] {
+  --color-text: #e8edf5;
+  --color-muted: #9fb0c9;
+  --color-heading: #cfe0ff;
+
+  --color-bg: #0b1524;
+  --color-surface: #12233c;
+  --color-section-alt: #0f1d31;
+  --color-band: #0a1626;
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-chip-bg: rgba(255, 255, 255, 0.07);
+  --color-faint-gold: rgba(184, 134, 43, 0.14);
+
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.5);
+  --shadow-nav: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-bg text-text font-body antialiased;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    /* Safety net: never allow a stray element to cause horizontal scroll on
+       small screens. `clip` (not `hidden`) avoids creating a scroll container,
+       so the sticky header keeps working. */
+    overflow-x: clip;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-head;
+  }
+  /* Consistent focus ring for keyboard users across interactive elements. */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible {
+    @apply outline-none ring-2 ring-gold ring-offset-2 ring-offset-bg rounded-sm;
+  }
+}
+
+@layer components {
+  /* Page horizontal rhythm — one place to tune section gutters. */
+  .container-page {
+    @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-10;
+  }
+  .eyebrow {
+    @apply text-[13px] font-semibold uppercase tracking-[0.14em] text-gold;
+  }
+  .section-title {
+    @apply font-head text-2xl font-semibold text-heading sm:text-[28px];
+  }
+}
+
+/* Flash applied to a card that a search result deep-links to, so the eye
+   lands on the exact item. Toggled by features/search/highlight.ts. */
+.search-highlight {
+  animation: search-pulse 2.2s ease-out;
+  border-radius: 0.6rem;
+}
+@keyframes search-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(184, 134, 43, 0);
+  }
+  12% {
+    box-shadow: 0 0 0 3px rgba(184, 134, 43, 0.7);
+  }
+  60% {
+    box-shadow: 0 0 0 3px rgba(184, 134, 43, 0.45);
+  }
+}
+
+/* Keep deep-linked cards clear of the sticky header when scrolled into view. */
+[id^='course-'],
+[id^='faculty-'],
+[id^='notice-'] {
+  scroll-margin-top: 96px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
