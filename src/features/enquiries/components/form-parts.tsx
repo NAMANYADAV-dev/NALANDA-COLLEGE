@@ -28,10 +28,10 @@ export function Field({
   return (
     <div>
       <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-semibold text-text">
-        {label} {required && <span className="text-[#D64545]">*</span>}
+        {label} {required && <span className="text-[#b91c1c]">*</span>}
       </label>
       {children}
-      {error && <p className="mt-1.5 text-[13px] text-[#D64545]">{error}</p>}
+      {error && <p className="mt-1.5 text-[13px] text-[#b91c1c]">{error}</p>}
     </div>
   );
 }
@@ -100,7 +100,7 @@ export function SuccessPanel({
   return (
     <div className="px-2 py-6 text-center">
       <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(46,139,87,.12)]">
-        <Icon name="check" size={32} className="text-[#2E8B57]" />
+        <Icon name="check" size={32} className="text-[#1b6e3d]" />
       </div>
       <h2 className="mb-2.5 font-head text-2xl font-semibold text-navy dark:text-gold-hi">{title}</h2>
       <p className="mx-auto mb-6 max-w-[44ch] text-base leading-relaxed text-muted">{message}</p>

@@ -83,7 +83,7 @@ export default function AboutPage() {
               width={260}
               height={150}
               className="h-full w-full object-contain"
-              fallback={<span className="text-center text-[13px] text-[#6b7a90]">University logo</span>}
+              fallback={<span className="text-center text-[13px] text-[#5a6472]">University logo</span>}
             />
           </div>
           <div>

@@ -9,7 +9,7 @@ import { StatusActions } from '@/features/enquiries/components/StatusActions';
 export const metadata: Metadata = { title: 'Dashboard · Admin' };
 
 /** Avatar colour pool for enquiry initials. */
-const AVATAR_COLORS = ['#1B3A6B', '#2E8B57', '#B8862B', '#7A4F9E', '#C4562F'];
+const AVATAR_COLORS = ['#1B3A6B', '#1b6e3d', '#8f6519', '#7A4F9E', '#a8431f'];
 const initialsOf = (name: string) =>
   name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 

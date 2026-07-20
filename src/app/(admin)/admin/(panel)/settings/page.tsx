@@ -33,7 +33,7 @@ export default async function AdminSettingsPage() {
             <form action={signOut} className="pt-2">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-[#D64545] hover:bg-[rgba(214,69,69,.06)]"
+                className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-semibold text-[#b91c1c] hover:bg-[rgba(214,69,69,.06)]"
               >
                 <Icon name="log-out" size={15} /> Sign out
               </button>
@@ -43,7 +43,7 @@ export default async function AdminSettingsPage() {
           {/* Connection status */}
           <Card title="Supabase connection" icon="layers">
             <div className="flex items-center gap-2">
-              <span className={`h-2.5 w-2.5 rounded-full ${connected ? 'bg-[#2E8B57]' : 'bg-[#D6A545]'}`} />
+              <span className={`h-2.5 w-2.5 rounded-full ${connected ? 'bg-[#1b6e3d]' : 'bg-[#D6A545]'}`} />
               <span className="text-sm font-semibold text-text">
                 {connected ? 'Connected' : 'Not configured'}
               </span>

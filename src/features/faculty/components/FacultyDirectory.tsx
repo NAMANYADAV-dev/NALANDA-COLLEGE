@@ -100,7 +100,8 @@ export function FacultyDirectory({ faculty }: { faculty: Faculty[] }) {
                   <span className="inline-block rounded-full bg-section-alt px-2.5 py-[3px] text-[11px] font-semibold tracking-[0.05em] text-navy dark:text-gold-hi">
                     {person.department}
                   </span>
-                  <h3 className="mb-0.5 mt-3 font-head text-[17px] font-semibold text-text">{person.name}</h3>
+                  {/* h2: these cards are the first content level under the page h1 */}
+                  <h2 className="mb-0.5 mt-3 font-head text-[17px] font-semibold text-text">{person.name}</h2>
                   <div className="text-sm font-medium text-gold">{person.designation}</div>
                   {person.qualification && (
                     <div className="mt-1.5 text-[13px] text-muted">{person.qualification}</div>

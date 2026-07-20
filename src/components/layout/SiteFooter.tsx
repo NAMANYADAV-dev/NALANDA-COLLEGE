@@ -29,7 +29,7 @@ export function SiteFooter({
         {/* Brand + blurb */}
         <div>
           <div className="mb-3.5 flex items-center gap-2.5">
-            <span className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-gold font-head font-bold text-navy-deep">
+            <span className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-gold-hi font-head font-bold text-navy-deep">
               N
             </span>
             <span className="font-head text-[17px] font-bold text-white">{siteConfig.name}</span>
@@ -39,10 +39,10 @@ export function SiteFooter({
 
         {/* Quick links */}
         <div>
-          <h4 className="mb-3.5 text-sm font-semibold text-white">Quick links</h4>
+          <h2 className="mb-3.5 text-sm font-semibold text-white">Quick links</h2>
           <div className="flex flex-col gap-2.5 text-sm">
             {footerNav.map((link) => (
-              <Link key={link.href} href={link.href} className="text-[#c6d2e4] hover:text-gold">
+              <Link key={link.href} href={link.href} className="text-[#c6d2e4] hover:text-gold-hi">
                 {link.label}
               </Link>
             ))}
@@ -51,7 +51,7 @@ export function SiteFooter({
 
         {/* Contact */}
         <div>
-          <h4 className="mb-3.5 text-sm font-semibold text-white">Contact</h4>
+          <h2 className="mb-3.5 text-sm font-semibold text-white">Contact</h2>
           <address className="text-sm not-italic leading-7">
             {c.address}
             <br />
@@ -64,7 +64,7 @@ export function SiteFooter({
         {/* Social — only shown when at least one link is set */}
         {socialLinks.length > 0 && (
           <div>
-            <h4 className="mb-3.5 text-sm font-semibold text-white">Follow</h4>
+            <h2 className="mb-3.5 text-sm font-semibold text-white">Follow</h2>
             <div className="flex gap-2.5">
               {socialLinks.map((s) => (
                 <a

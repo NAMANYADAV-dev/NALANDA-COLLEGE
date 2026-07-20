@@ -40,12 +40,12 @@ export function AdmissionForm({ courses }: { courses: string[] }) {
       <div>
         <h2 className="font-head text-2xl font-semibold text-navy dark:text-gold-hi">Admission inquiry</h2>
         <p className="mt-1.5 text-[15px] text-muted">
-          Fields marked <span className="text-[#D64545]">*</span> are required.
+          Fields marked <span className="text-[#b91c1c]">*</span> are required.
         </p>
       </div>
 
       {state.status === 'error' && state.message && (
-        <p className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#D64545]">
+        <p className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#b91c1c]">
           {state.message}
         </p>
       )}

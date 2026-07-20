@@ -69,8 +69,8 @@ export interface Testimonial {
 
 export const TESTIMONIALS: Testimonial[] = [
   { quote: 'The faculty genuinely care. The mentorship I got here shaped both my degree and my career direction.', name: 'Priya R.', meta: 'B.Sc, Class of 2024', initials: 'PR', avatarBg: '#1B3A6B' },
-  { quote: 'From moot courts to internships, Nalanda gave me real-world exposure that made all the difference.', name: 'Arjun K.', meta: 'LLB, Class of 2023', initials: 'AK', avatarBg: '#2E8B57' },
-  { quote: "Affordable, welcoming and academically strong — I'd choose this campus all over again.", name: 'Sneha N.', meta: 'M.A, Class of 2025', initials: 'SN', avatarBg: '#B8862B' },
+  { quote: 'From moot courts to internships, Nalanda gave me real-world exposure that made all the difference.', name: 'Arjun K.', meta: 'LLB, Class of 2023', initials: 'AK', avatarBg: '#1b6e3d' },
+  { quote: "Affordable, welcoming and academically strong — I'd choose this campus all over again.", name: 'Sneha N.', meta: 'M.A, Class of 2025', initials: 'SN', avatarBg: '#8f6519' },
 ];
 
 /** Frequently asked questions (accordion). */

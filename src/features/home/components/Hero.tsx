@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { siteConfig } from '@/config/site';
 import { HERO_STATS } from '@/features/home/data';
@@ -5,21 +6,26 @@ import { HERO_STATS } from '@/features/home/data';
 /**
  * Hero — headline, primary CTAs, and the overlapping stats card.
  *
- * Server Component (no interactivity). The background layers a campus photo
- * (/public/images/hero.jpg, via siteConfig.images.hero) over a brand gradient —
- * so the moment that file exists it shows through, and until then the gradient
- * stands in on its own. A readability overlay sits on top of both.
+ * Server Component (no interactivity). The campus photo is the page's LCP
+ * element, so it uses <Image priority>: Next.js emits a <link rel="preload">
+ * (the browser fetches it immediately instead of discovering it late through
+ * CSS) and serves a resized WebP/AVIF instead of the full-size source. The
+ * brand gradient sits behind as a fallback, with a readability overlay above.
  */
 export function Hero() {
   return (
     <section className="relative">
       {/* Media + overlay */}
-      <div
-        className="hero-media relative h-[520px] overflow-hidden bg-cover bg-center md:h-[600px]"
-        style={{
-          backgroundImage: `url(${siteConfig.images.hero}), radial-gradient(120% 90% at 80% 10%,#1d3a63 0%,#12294D 45%,#0e1a2e 100%)`,
-        }}
-      >
+      <div className="hero-media relative h-[520px] overflow-hidden bg-[radial-gradient(120%_90%_at_80%_10%,#1d3a63_0%,#12294D_45%,#0e1a2e_100%)] md:h-[600px]">
+        <Image
+          src={siteConfig.images.hero}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          quality={72}
+          className="object-cover"
+        />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(100deg,rgba(11,20,38,.92)_0%,rgba(18,41,77,.82)_42%,rgba(18,41,77,.28)_100%)]" />
 
         <div className="container-page relative flex h-full flex-col justify-center">

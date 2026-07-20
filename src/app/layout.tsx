@@ -55,6 +55,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className={`${poppins.variable} ${inter.variable}`}>
       <head>
+        {/* Warm up the Storage connection so gallery/faculty photos start
+            downloading sooner (DNS + TLS handshake happens up front). */}
+        {process.env.NEXT_PUBLIC_SUPABASE_URL && (
+          <link rel="preconnect" href={process.env.NEXT_PUBLIC_SUPABASE_URL} crossOrigin="" />
+        )}
         <ThemeScript />
       </head>
       <body>{children}</body>

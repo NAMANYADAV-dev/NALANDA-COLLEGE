@@ -20,7 +20,7 @@ export function ForgotPasswordForm() {
     return (
       <div className="w-full max-w-[410px] text-center">
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[rgba(46,139,87,.12)]">
-          <Icon name="mail" size={30} className="text-[#2E8B57]" />
+          <Icon name="mail" size={30} className="text-[#1b6e3d]" />
         </div>
         <h2 className="font-head text-[24px] font-bold text-navy dark:text-gold-hi">Check your email</h2>
         <p className="mx-auto mb-6 mt-2 max-w-[38ch] text-[15px] leading-relaxed text-muted">

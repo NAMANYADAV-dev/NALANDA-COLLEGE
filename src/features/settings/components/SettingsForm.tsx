@@ -22,12 +22,12 @@ export function SettingsForm({ values }: { values: Record<string, string> }) {
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
       {state.status === 'success' && state.message && (
-        <p className="rounded-lg bg-[rgba(46,139,87,.1)] px-4 py-3 text-sm font-medium text-[#2E8B57]">
+        <p className="rounded-lg bg-[rgba(46,139,87,.1)] px-4 py-3 text-sm font-medium text-[#1b6e3d]">
           {state.message}
         </p>
       )}
       {state.status === 'error' && state.message && (
-        <p className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#D64545]">
+        <p className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#b91c1c]">
           {state.message}
         </p>
       )}

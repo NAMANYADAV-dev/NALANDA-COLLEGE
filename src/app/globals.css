@@ -14,9 +14,12 @@
   --color-navy: #1b3a6b;
   --color-navy-deep: #12294d;
   --color-navy-darkest: #0e1a2e;
-  --color-gold: #b8862b;
-  --color-gold-hi: #e7c579;
-  --color-gold-hover: #9c701f;
+  /* Gold is deliberately darker in LIGHT mode so gold text on white and white
+     text on gold buttons clear WCAG AA (4.5:1). #b8862b only reached 3.25:1.
+     Dark mode re-brightens it below (on navy it needs the opposite treatment). */
+  --color-gold: #8f6519; /* 5.0:1 on white */
+  --color-gold-hi: #e7c579; /* for text on navy/dark surfaces */
+  --color-gold-hover: #74510f;
 
   --color-text: #222a35;
   --color-muted: #5a6472;
@@ -39,6 +42,11 @@
   --color-text: #e8edf5;
   --color-muted: #9fb0c9;
   --color-heading: #cfe0ff;
+
+  /* On dark surfaces the light-mode gold would be too dark to read, so restore
+     the brighter brand gold here (5.1:1 on the dark background). */
+  --color-gold: #b8862b;
+  --color-gold-hover: #9c701f;
 
   --color-bg: #0b1524;
   --color-surface: #12233c;

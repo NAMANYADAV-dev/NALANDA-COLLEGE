@@ -21,7 +21,7 @@ export function Placements() {
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
-            className="flex h-16 items-center justify-center rounded-lg border border-border bg-surface font-head text-sm font-semibold text-[#9aa6b5]"
+            className="flex h-16 items-center justify-center rounded-lg border border-border bg-surface font-head text-sm font-semibold text-muted"
           >
             Logo
           </div>

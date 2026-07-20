@@ -85,7 +85,8 @@ export function NoticesBoard({ notices }: { notices: Notice[] }) {
                 <Badge tone={isEvent ? 'gold' : 'navy'} className="uppercase tracking-[0.08em]">
                   {isEvent ? 'Event' : 'Notice'}
                 </Badge>
-                <h3 className="mb-1.5 mt-2 font-head text-lg font-semibold text-text">{item.title}</h3>
+                {/* h2: these cards are the first content level under the page h1 */}
+                <h2 className="mb-1.5 mt-2 font-head text-lg font-semibold text-text">{item.title}</h2>
                 {isEvent && item.location && (
                   <div className="mb-1.5 flex items-center gap-1.5 text-[13px] text-muted">
                     <Icon name="map-pin" size={13} className="text-gold" />

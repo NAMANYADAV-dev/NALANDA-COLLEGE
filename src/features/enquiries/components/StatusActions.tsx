@@ -31,7 +31,7 @@ export function StatusActions({
 
   if (compact) {
     return status === 'resolved' ? (
-      <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#e8f5ee] px-3 py-1.5 text-[12.5px] font-semibold text-[#2E8B57]">
+      <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#e8f5ee] px-3 py-1.5 text-[12.5px] font-semibold text-[#1b6e3d]">
         <Icon name="check" size={14} /> Done
       </span>
     ) : (
@@ -75,7 +75,7 @@ export function StatusActions({
           <button
             onClick={remove}
             disabled={pending}
-            className="rounded-md bg-[#D64545] px-2.5 py-1.5 text-[12px] font-semibold text-white hover:brightness-95 disabled:opacity-60"
+            className="rounded-md bg-[#b91c1c] px-2.5 py-1.5 text-[12px] font-semibold text-white hover:brightness-95 disabled:opacity-60"
           >
             {pending ? '…' : 'Delete'}
           </button>
@@ -90,7 +90,7 @@ export function StatusActions({
         <button
           onClick={() => setConfirming(true)}
           title="Delete enquiry"
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-[#D64545] hover:bg-[rgba(214,69,69,.08)]"
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-[#b91c1c] hover:bg-[rgba(214,69,69,.08)]"
         >
           <Icon name="trash" size={15} />
         </button>

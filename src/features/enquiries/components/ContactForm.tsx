@@ -34,7 +34,7 @@ export function ContactForm() {
       </h2>
 
       {state.status === 'error' && state.message && (
-        <p className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#D64545]">
+        <p className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#b91c1c]">
           {state.message}
         </p>
       )}

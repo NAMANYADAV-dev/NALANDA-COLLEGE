@@ -73,7 +73,8 @@ export function CourseCatalog({ courses }: { courses: Course[] }) {
                   <Badge tone={levelBadgeTone(course.level)}>{course.level}</Badge>
                   <span className="text-[13px] text-muted">{course.duration}</span>
                 </div>
-                <h3 className="mb-1.5 mt-3.5 font-head text-xl font-semibold text-text">{course.name}</h3>
+                {/* h2: these cards are the first content level under the page h1 */}
+                <h2 className="mb-1.5 mt-3.5 font-head text-xl font-semibold text-text">{course.name}</h2>
                 <p className="mb-3.5 text-sm leading-relaxed text-muted">{course.about}</p>
                 <div className="w-full border-t border-border pt-3 text-[13px] text-text">
                   <span className="text-muted">Eligibility:</span> {course.eligibility}

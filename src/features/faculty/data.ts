@@ -19,9 +19,9 @@ export const FACULTY_DEPARTMENTS = ['Arts', 'Science', 'Law', 'Agriculture'] as 
 export function departmentColor(department: string): string {
   const map: Record<string, string> = {
     Arts: '#1B3A6B',
-    Science: '#2E8B57',
+    Science: '#1b6e3d',
     Law: '#12294D',
-    Agriculture: '#B8862B',
+    Agriculture: '#8f6519',
   };
   return map[department] ?? '#1B3A6B';
 }

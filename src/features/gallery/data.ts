@@ -26,8 +26,8 @@ export const GALLERY_FALLBACK: GalleryImage[] = [
 const GRADIENTS = [
   'linear-gradient(135deg,#1B3A6B,#2f5a97)',
   'linear-gradient(135deg,#12294D,#1B3A6B)',
-  'linear-gradient(135deg,#2E8B57,#1f6b41)',
-  'linear-gradient(135deg,#B8862B,#8f6620)',
+  'linear-gradient(135deg,#1b6e3d,#1f6b41)',
+  'linear-gradient(135deg,#8f6519,#8f6620)',
   'linear-gradient(135deg,#1B3A6B,#12294D)',
   'linear-gradient(135deg,#2f5a97,#1B3A6B)',
 ];

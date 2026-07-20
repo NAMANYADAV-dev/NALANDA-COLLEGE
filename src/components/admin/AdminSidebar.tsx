@@ -80,7 +80,7 @@ export function AdminSidebar({
           <span className="block text-[11.5px] text-[#8fa0bd]">Administrator</span>
         </span>
         <form action={signOut} className="ml-auto flex">
-          <button type="submit" title="Log out" className="text-[#8fa0bd] transition-colors hover:text-gold">
+          <button type="submit" title="Log out" className="text-[#8fa0bd] transition-colors hover:text-gold-hi">
             <Icon name="log-out" size={18} />
           </button>
         </form>

@@ -28,10 +28,10 @@ export function GalleryRowActions({ id, isPublished }: { id: string; isPublished
         title={isPublished ? 'Published — click to hide' : 'Hidden — click to publish'}
         className={cn(
           'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-semibold transition-colors disabled:opacity-60',
-          isPublished ? 'bg-[#e8f5ee] text-[#2E8B57]' : 'bg-section-alt text-muted',
+          isPublished ? 'bg-[#e8f5ee] text-[#1b6e3d]' : 'bg-section-alt text-muted',
         )}
       >
-        <span className={cn('h-1.5 w-1.5 rounded-full', isPublished ? 'bg-[#2E8B57]' : 'bg-muted')} />
+        <span className={cn('h-1.5 w-1.5 rounded-full', isPublished ? 'bg-[#1b6e3d]' : 'bg-muted')} />
         {isPublished ? 'Published' : 'Hidden'}
       </button>
 
@@ -48,7 +48,7 @@ export function GalleryRowActions({ id, isPublished }: { id: string; isPublished
           <button
             onClick={remove}
             disabled={pending}
-            className="rounded-md bg-[#D64545] px-2.5 py-1.5 text-[12px] font-semibold text-white hover:brightness-95 disabled:opacity-60"
+            className="rounded-md bg-[#b91c1c] px-2.5 py-1.5 text-[12px] font-semibold text-white hover:brightness-95 disabled:opacity-60"
           >
             {pending ? '…' : 'Delete'}
           </button>
@@ -63,7 +63,7 @@ export function GalleryRowActions({ id, isPublished }: { id: string; isPublished
         <button
           onClick={() => setConfirming(true)}
           title="Delete"
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-[#D64545] hover:bg-[rgba(214,69,69,.08)]"
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-border text-[#b91c1c] hover:bg-[rgba(214,69,69,.08)]"
         >
           <Icon name="trash" size={15} />
         </button>

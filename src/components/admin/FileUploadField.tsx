@@ -114,7 +114,7 @@ export function FileUploadField({
     <div>
       <label className="mb-1.5 block text-sm font-semibold text-text">
         {label}
-        {required && <span className="ml-1 text-[#D64545]">*</span>}
+        {required && <span className="ml-1 text-[#b91c1c]">*</span>}
         {hint && <span className="ml-2 font-normal text-muted">{hint}</span>}
       </label>
 
@@ -146,7 +146,7 @@ export function FileUploadField({
           )}
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#2E8B57]">
+            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#1b6e3d]">
               <Icon name="check" size={15} /> Uploaded
             </div>
             {fileMeta && (
@@ -161,7 +161,7 @@ export function FileUploadField({
               <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-muted hover:underline">
                 View <Icon name="external" size={12} />
               </a>
-              <button type="button" onClick={handleRemove} className="text-[#D64545] hover:underline">
+              <button type="button" onClick={handleRemove} className="text-[#b91c1c] hover:underline">
                 Remove
               </button>
             </div>
@@ -212,7 +212,7 @@ export function FileUploadField({
         </button>
       )}
 
-      {error && <p className="mt-1.5 text-[13px] text-[#D64545]">{error}</p>}
+      {error && <p className="mt-1.5 text-[13px] text-[#b91c1c]">{error}</p>}
     </div>
   );
 }

@@ -33,7 +33,7 @@ export function CourseForm({
   return (
     <form action={formAction} className="max-w-3xl">
       {state.status === 'error' && state.message && (
-        <p className="mb-5 rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#D64545]">
+        <p className="mb-5 rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#b91c1c]">
           {state.message}
         </p>
       )}
@@ -131,7 +131,7 @@ function Field({
         {hint && <span className="ml-2 font-normal text-muted">{hint}</span>}
       </label>
       {children}
-      {error && <p className="mt-1.5 text-[13px] text-[#D64545]">{error}</p>}
+      {error && <p className="mt-1.5 text-[13px] text-[#b91c1c]">{error}</p>}
     </div>
   );
 }

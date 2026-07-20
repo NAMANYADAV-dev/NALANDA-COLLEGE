@@ -47,7 +47,8 @@ export default async function AdmissionsPage() {
               >
                 {s.n}
               </div>
-              <h3 className="mb-1.5 font-head text-lg font-semibold text-text">{s.title}</h3>
+              {/* h2: first content level under the page h1 */}
+              <h2 className="mb-1.5 font-head text-lg font-semibold text-text">{s.title}</h2>
               <p className="text-sm leading-relaxed text-muted">{s.desc}</p>
             </div>
           ))}
