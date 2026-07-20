@@ -1,5 +1,6 @@
 import 'server-only';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { isSupabaseConfigured } from '@/lib/supabase/env';
 import type { Notice } from '@/types/database.types';
 import { NOTICES_FALLBACK } from './data';
@@ -13,7 +14,7 @@ import { NOTICES_FALLBACK } from './data';
 export async function getLatestNotices(limit = 4): Promise<Notice[]> {
   if (!isSupabaseConfigured()) return NOTICES_FALLBACK.slice(0, limit);
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient(); // no cookies → page stays cacheable
     const { data, error } = await supabase
       .from('notices')
       .select('*')
@@ -67,7 +68,7 @@ export async function getNoticeById(id: string): Promise<Notice | null> {
 export async function getAllNotices(): Promise<Notice[]> {
   if (!isSupabaseConfigured()) return NOTICES_FALLBACK;
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient(); // no cookies → page stays cacheable
     const { data, error } = await supabase
       .from('notices')
       .select('*')

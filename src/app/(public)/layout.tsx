@@ -13,6 +13,13 @@ import { getSiteSettings } from '@/features/settings/queries';
  * Fetches the course catalogue here (server-side) so the nav's Courses
  * mega-menu can list the live programmes on every page.
  */
+/**
+ * Cache public pages and refresh them at most every 5 minutes. Admin actions
+ * call `revalidatePath('/', 'layout')`, so edits still appear immediately — this
+ * is just a safety net for changes made outside the admin (e.g. direct in DB).
+ */
+export const revalidate = 300;
+
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [courses, settings] = await Promise.all([getPublishedCourses(), getSiteSettings()]);
 

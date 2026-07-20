@@ -1,5 +1,6 @@
 import 'server-only';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { isSupabaseConfigured } from '@/lib/supabase/env';
 import type { Faculty } from '@/types/database.types';
 import { FACULTY_FALLBACK } from './data';
@@ -13,7 +14,7 @@ import { FACULTY_FALLBACK } from './data';
 export async function getPublishedFaculty(): Promise<Faculty[]> {
   if (!isSupabaseConfigured()) return FACULTY_FALLBACK;
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient(); // no cookies → page stays cacheable
     const { data, error } = await supabase
       .from('faculty')
       .select('*')

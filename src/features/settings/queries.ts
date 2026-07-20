@@ -1,6 +1,6 @@
 import 'server-only';
 import { cache } from 'react';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { SETTING_DEFAULTS } from './config';
 
 /**
@@ -16,7 +16,9 @@ import { SETTING_DEFAULTS } from './config';
 /** Raw key → value map, defaults merged with any admin-saved overrides. */
 export const getSettingsMap = cache(async (): Promise<Record<string, string>> => {
   try {
-    const supabase = await createServerSupabaseClient();
+    // Settings are public data (RLS allows anon select) and are read on every
+    // public page — using the cookie-free client keeps those pages cacheable.
+    const supabase = createPublicSupabaseClient();
     const { data, error } = await supabase.from('site_settings').select('key, value');
     if (error) throw error;
 
