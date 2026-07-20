@@ -4,10 +4,15 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { removeStoredFile, removeReplacedFile } from '@/lib/storage/server';
+import { requireAdmin } from '@/features/admin/auth/session';
 import { validateFaculty, type FacultyFormState, type RawFaculty } from './schema';
 
 /**
  * Faculty admin actions (create / update / delete / publish toggle).
+ *
+ * Every action re-checks the session with `requireAdmin()` — Server Actions are
+ * public HTTP endpoints, so the admin layout is not a gate. RLS is the second
+ * layer.
  *
  * The optional profile photo is uploaded to Storage client-side before submit,
  * so `photo_url` already points at the new file (or is empty). These actions
@@ -55,6 +60,8 @@ export async function createFaculty(
   _prev: FacultyFormState,
   formData: FormData,
 ): Promise<FacultyFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateFaculty(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -78,6 +85,8 @@ export async function updateFaculty(
   _prev: FacultyFormState,
   formData: FormData,
 ): Promise<FacultyFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateFaculty(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -102,6 +111,8 @@ export async function updateFaculty(
 
 /** Delete a faculty member and their photo. */
 export async function deleteFaculty(id: string): Promise<void> {
+  await requireAdmin();
+
   const oldUrl = await currentPhotoUrl(id);
 
   const supabase = await createServerSupabaseClient();
@@ -117,6 +128,8 @@ export async function deleteFaculty(id: string): Promise<void> {
 
 /** Toggle a faculty member between published and hidden. */
 export async function toggleFacultyPublished(id: string, next: boolean): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('faculty').update({ is_published: next }).eq('id', id);
   if (error) {

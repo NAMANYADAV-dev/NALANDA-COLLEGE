@@ -4,10 +4,15 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { removeStoredFile, removeReplacedFile } from '@/lib/storage/server';
+import { requireAdmin } from '@/features/admin/auth/session';
 import { validateDownload, type DownloadFormState, type RawDownload } from './schema';
 
 /**
  * Downloads admin actions (create / update / delete / publish toggle).
+ *
+ * Every action re-checks the session with `requireAdmin()` — Server Actions are
+ * public HTTP endpoints, so the admin layout is not a gate. RLS is the second
+ * layer.
  *
  * The PDF is uploaded to Storage client-side before submit, so `file_url`
  * already points at the new file. These actions keep Storage and the database
@@ -52,6 +57,8 @@ export async function createDownload(
   _prev: DownloadFormState,
   formData: FormData,
 ): Promise<DownloadFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateDownload(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -75,6 +82,8 @@ export async function updateDownload(
   _prev: DownloadFormState,
   formData: FormData,
 ): Promise<DownloadFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateDownload(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -98,6 +107,8 @@ export async function updateDownload(
 
 /** Delete a download and its file. */
 export async function deleteDownload(id: string): Promise<void> {
+  await requireAdmin();
+
   const oldUrl = await currentFileUrl(id);
 
   const supabase = await createServerSupabaseClient();
@@ -113,6 +124,8 @@ export async function deleteDownload(id: string): Promise<void> {
 
 /** Toggle a download between published and hidden. */
 export async function toggleDownloadPublished(id: string, next: boolean): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('downloads').update({ is_published: next }).eq('id', id);
   if (error) {

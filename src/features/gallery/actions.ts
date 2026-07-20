@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { removeStoredFile, removeReplacedFile } from '@/lib/storage/server';
+import { requireAdmin } from '@/features/admin/auth/session';
 import { validateGallery, type GalleryFormState, type RawGallery } from './schema';
 
 /**
@@ -15,7 +16,10 @@ import { validateGallery, type GalleryFormState, type RawGallery } from './schem
  *   - create: if the DB insert fails, delete the just-uploaded file (rollback).
  *   - update: only after a successful DB write, delete the old file it replaced.
  *   - delete: after the row is removed, delete its file.
- * All writes are RLS-gated (authenticated admins only).
+ *
+ * Every action re-checks the session with `requireAdmin()` — Server Actions are
+ * public HTTP endpoints, so the admin layout is not a gate. RLS is the second
+ * layer.
  */
 
 /** Re-render everywhere gallery images appear. */
@@ -53,6 +57,8 @@ export async function createGalleryImage(
   _prev: GalleryFormState,
   formData: FormData,
 ): Promise<GalleryFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateGallery(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -77,6 +83,8 @@ export async function updateGalleryImage(
   _prev: GalleryFormState,
   formData: FormData,
 ): Promise<GalleryFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateGallery(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -102,6 +110,8 @@ export async function updateGalleryImage(
 
 /** Delete a gallery image and its file. */
 export async function deleteGalleryImage(id: string): Promise<void> {
+  await requireAdmin();
+
   const oldUrl = await currentImageUrl(id);
 
   const supabase = await createServerSupabaseClient();
@@ -117,6 +127,8 @@ export async function deleteGalleryImage(id: string): Promise<void> {
 
 /** Toggle a gallery image between published and hidden. */
 export async function toggleGalleryPublished(id: string, next: boolean): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('gallery_images').update({ is_published: next }).eq('id', id);
   if (error) {

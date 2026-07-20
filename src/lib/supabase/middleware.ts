@@ -7,14 +7,18 @@ const ADMIN_PREFIX = '/admin';
 const ADMIN_LOGIN = '/admin/login';
 
 /**
- * Admin routes reachable WITHOUT a full session: login plus the password-reset
+ * Admin routes reachable WITHOUT a full admin session: login, the password-reset
  * screens (reset-password runs on a temporary recovery session established by
- * the /auth/callback exchange, so it must not be bounced to login).
+ * the /auth/callback exchange, so it must not be bounced to login), and
+ * /admin/no-access — where requireAdmin() sends a signed-in user who is not on
+ * the admins allow-list. That page must stay reachable with a valid session or
+ * the redirect would loop.
  */
 const PUBLIC_ADMIN_ROUTES = new Set([
   '/admin/login',
   '/admin/forgot-password',
   '/admin/reset-password',
+  '/admin/no-access',
 ]);
 
 /**

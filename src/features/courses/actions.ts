@@ -3,14 +3,20 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/features/admin/auth/session';
 import { validateCourse, type CourseFormState, type RawCourse } from './schema';
 
 /**
  * Course admin actions (create / update / delete / publish toggle).
  *
- * All writes are gated by RLS (authenticated admins only). After each change we
- * revalidate the public layout — so the nav Courses mega-menu and the /courses
- * page reflect it — plus the admin list and dashboard count.
+ * Every action starts with `requireAdmin()`. Server Actions are publicly
+ * reachable HTTP endpoints — being rendered inside the admin panel is NOT a
+ * gate — so each one re-checks the session itself rather than trusting the
+ * layout. RLS in the database is the second, independent layer.
+ *
+ * After each change we revalidate the public layout — so the nav Courses
+ * mega-menu and the /courses page reflect it — plus the admin list and
+ * dashboard count.
  */
 
 /** Re-render everywhere a course appears. */
@@ -44,6 +50,8 @@ export async function createCourse(
   _prev: CourseFormState,
   formData: FormData,
 ): Promise<CourseFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateCourse(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -66,6 +74,8 @@ export async function updateCourse(
   _prev: CourseFormState,
   formData: FormData,
 ): Promise<CourseFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateCourse(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -84,6 +94,8 @@ export async function updateCourse(
 
 /** Delete a course. */
 export async function deleteCourse(id: string): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('courses').delete().eq('id', id);
   if (error) {
@@ -95,6 +107,8 @@ export async function deleteCourse(id: string): Promise<void> {
 
 /** Toggle a course between published and hidden. */
 export async function toggleCoursePublished(id: string, next: boolean): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('courses').update({ is_published: next }).eq('id', id);
   if (error) {

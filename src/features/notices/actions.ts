@@ -3,12 +3,15 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/features/admin/auth/session';
 import { validateNotice, type NoticeFormState, type RawNotice } from './schema';
 
 /**
  * Notice / event admin actions (create / update / delete / publish toggle).
  *
- * All writes are gated by RLS (authenticated admins only). After each change we
+ * Every action re-checks the session with `requireAdmin()` — Server Actions are
+ * public HTTP endpoints, so the admin layout is not a gate. RLS is the second
+ * layer. After each change we
  * revalidate the public layout — so the Home notices strip and the /notices
  * page reflect it — plus the admin list and dashboard count.
  */
@@ -39,6 +42,8 @@ export async function createNotice(
   _prev: NoticeFormState,
   formData: FormData,
 ): Promise<NoticeFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateNotice(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -61,6 +66,8 @@ export async function updateNotice(
   _prev: NoticeFormState,
   formData: FormData,
 ): Promise<NoticeFormState> {
+  await requireAdmin();
+
   const { ok, values, fieldErrors } = validateNotice(readForm(formData));
   if (!ok) return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
 
@@ -79,6 +86,8 @@ export async function updateNotice(
 
 /** Delete a notice/event. */
 export async function deleteNotice(id: string): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('notices').delete().eq('id', id);
   if (error) {
@@ -90,6 +99,8 @@ export async function deleteNotice(id: string): Promise<void> {
 
 /** Toggle a notice between published and hidden. */
 export async function toggleNoticePublished(id: string, next: boolean): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('notices').update({ is_published: next }).eq('id', id);
   if (error) {

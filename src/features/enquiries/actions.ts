@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { requireAdmin } from '@/features/admin/auth/session';
 import type { EnquiryStatus } from '@/types/database.types';
 import { notifyNewEnquiry } from './notify';
 import {
@@ -81,10 +82,12 @@ export async function submitEnquiry(
 
 /**
  * updateEnquiryStatus — admin action to move a lead through its lifecycle
- * (new → read → resolved). RLS restricts this to authenticated admins.
- * Revalidates the admin pages so the list + dashboard reflect the change.
+ * (new → read → resolved). Gated by `requireAdmin()` here and by RLS in the
+ * database. Revalidates the admin pages so the list + dashboard reflect it.
  */
 export async function updateEnquiryStatus(id: string, status: EnquiryStatus): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('enquiries').update({ status }).eq('id', id);
   if (error) {
@@ -96,10 +99,13 @@ export async function updateEnquiryStatus(id: string, status: EnquiryStatus): Pr
 }
 
 /**
- * deleteEnquiry — permanently remove a lead (admin only, RLS-gated).
- * Used to clear out handled/resolved enquiries so the inbox stays tidy.
+ * deleteEnquiry — permanently remove a lead. Gated by `requireAdmin()` here and
+ * by RLS in the database. Used to clear out handled enquiries so the inbox
+ * stays tidy.
  */
 export async function deleteEnquiry(id: string): Promise<void> {
+  await requireAdmin();
+
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.from('enquiries').delete().eq('id', id);
   if (error) {

@@ -15,6 +15,10 @@ Tables haath se banane ki zaroorat **nahi** hai. Supabase already SQL editor det
 
 Isse ek hi baar me: 6 tables + 3 enums + saari RLS security policies + indexes + auto `updated_at` trigger — sab ban jayega.
 
+5. **Phir `supabase/migrations/0002_admin_roles.sql` bhi isi tarah Run karo — ye SKIP mat karna.**
+
+   `0001` har logged-in user ko admin maan leta hai. Supabase me signup by default ON hota hai, matlab koi bhi banda register karke poora content delete kar sakta hai. `0002` ek `admins` allow-list bana deta hai — sirf usme jinke naam hain wahi kuch likh sakte hain. Iske baad file ke last me diya **"SEED THE FIRST ADMIN"** wala snippet apne email ke saath run karna zaroori hai, warna admin panel me login toh hoga par kuch save nahi hoga.
+
 > Sample data bhi chahiye? Uske baad `supabase/seed.sql` ko bhi isi tarah Run kar do (6 courses, 8 faculty, 7 notices, 9 gallery, 4 downloads aa jayenge). Ye optional hai — chaho toh apna data admin panel se daalna.
 
 Neeche di gayi table-by-table detail sirf **samajhne ke liye** hai (agar tum manually Table Editor se banana chahte ho, ya verify karna chahte ho ki sab sahi bana).
@@ -172,19 +176,24 @@ Har table pe RLS **on** hona chahiye, warna ya toh public ko kuch nahi dikhega y
 
 - **Public (bina login):**
   - `courses`, `faculty`, `notices`, `gallery_images`, `downloads` → sirf `is_published = true` wali rows **padh** sakta hai
-  - `enquiries` → sirf **insert** kar sakta hai (form bharna), padh nahi sakta
-- **Admin (Supabase me login kiya hua user):** har table pe **full read + write** (create/edit/delete)
+  - `enquiries` → kuch bhi seedha nahi kar sakta. Form `submit_enquiry()` function ke through jaata hai, jo ek email se 30 minute me sirf ek message allow karta hai (`supabase/enquiry_cooldown.sql`)
+- **Admin:** sirf wo logged-in user jiska id `admins` table me hai (`0002_admin_roles.sql`) — usko har table pe **full read + write**. Sirf login kar lena kaafi **nahi** hai.
 
 > Isliye SQL editor wala tarika best hai — RLS policies bhi khud lag jaati hain. Agar manually table banaoge to RLS policies alag se lagani padegi.
 
 ---
 
-## ✅ Setup ke baad ye 2 cheezein zaroor karo
+## ✅ Setup ke baad ye 3 cheezein zaroor karo
 
-1. **Admin user banao** (warna `/admin` me login nahi hoga — self-signup band hai):
+1. **Admin user banao:**
    Supabase Dashboard → **Authentication → Users → Add user** → apna email + password daalo.
+   Phir usko `admins` table me daalo — `0002_admin_roles.sql` ke last me diya snippet apne email ke saath run karo. **Dono step zaroori hain.** Sirf user banane se panel khulega toh sahi, par har save "access denied" dega.
 
-2. **`.env.local` me keys daalo** (project root me, `.env.example` copy karke):
+2. **Signup band karo:**
+   Dashboard → **Authentication → Providers → Email** → "Enable signup" **OFF**.
+   (`0002` ke baad naya account waise bhi admin nahi banta, par ajnabi logon ko account banane dene ka koi fayda nahi hai.)
+
+3. **`.env.local` me keys daalo** (project root me, `.env.example` copy karke):
    ```
    NEXT_PUBLIC_SUPABASE_URL=https://<your-ref>.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>

@@ -213,6 +213,12 @@ export interface Database {
         };
         Returns: { ok: boolean; wait_minutes: number };
       };
+      /** True when the caller's user id is in the admins allow-list —
+       *  see supabase/migrations/0002_admin_roles.sql. */
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
     };
     Enums: {
       course_level: CourseLevel;
