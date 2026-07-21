@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { Icon } from '@/components/ui/Icon';
 import { FilterPills, type FilterOption } from '@/components/ui/FilterPills';
 import { levelBadgeTone } from '@/features/courses/data';
-import { CourseDetailModal } from '@/features/courses/components/CourseDetailModal';
-import { highlightElement } from '@/features/search/highlight';
 import type { Course } from '@/types/database.types';
 
 type Filter = 'all' | 'UG' | 'PG';
@@ -20,35 +19,22 @@ const FILTERS: FilterOption<Filter>[] = [
 /**
  * CourseCatalog — the Courses page grid with a level filter.
  *
- * Client Component that owns the active-filter state and the "which course is
- * open" state. Each card opens the shared <CourseDetailModal> — the same rich
- * detail view as the home page — so the experience is consistent everywhere.
+ * Client Component purely for the filter state; each card is a plain <Link> to
+ * /courses/<slug>. It used to open a modal, which meant a programme had no URL
+ * of its own — nothing to share, nothing to rank in search, and no working back
+ * button. The detail now lives on a real page.
+ *
+ * The old `#course-<id>` hash deep-link handling went with the modal: search
+ * results point straight at the course page now, so there is nothing to scroll
+ * to and highlight.
  */
 export function CourseCatalog({ courses }: { courses: Course[] }) {
   const [filter, setFilter] = useState<Filter>('all');
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const active = courses.find((c) => c.id === activeId) ?? null;
 
   const visible = useMemo(
     () => (filter === 'all' ? courses : courses.filter((c) => c.level === filter)),
     [courses, filter],
   );
-
-  // Deep-link support: when arriving via a `#course-<id>` search result, clear
-  // the filter so the item is visible, then scroll to + highlight it.
-  useEffect(() => {
-    function handleHash() {
-      const hash = decodeURIComponent(window.location.hash).replace('#', '');
-      if (!hash.startsWith('course-')) return;
-      const id = hash.slice('course-'.length);
-      if (!courses.some((c) => c.id === id)) return;
-      setFilter('all');
-      window.setTimeout(() => highlightElement(hash), 60);
-    }
-    handleHash();
-    window.addEventListener('hashchange', handleHash);
-    return () => window.removeEventListener('hashchange', handleHash);
-  }, [courses]);
 
   return (
     <>
@@ -63,10 +49,9 @@ export function CourseCatalog({ courses }: { courses: Course[] }) {
         {visible.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((course) => (
-              <button
+              <Link
                 key={course.id}
-                id={`course-${course.id}`}
-                onClick={() => setActiveId(course.id)}
+                href={`/courses/${course.slug}`}
                 className="flex w-full flex-col items-start rounded-lg border border-border bg-surface p-6 text-left shadow-card transition-transform duration-150 hover:-translate-y-1 hover:shadow-card-hover"
               >
                 <div className="flex w-full items-center justify-between">
@@ -82,15 +67,13 @@ export function CourseCatalog({ courses }: { courses: Course[] }) {
                 <span className="mt-3.5 inline-flex items-center gap-1.5 text-[13px] font-semibold text-gold">
                   View details <Icon name="arrow-right" size={14} />
                 </span>
-              </button>
+              </Link>
             ))}
           </div>
         ) : (
           <EmptyState />
         )}
       </div>
-
-      {active && <CourseDetailModal course={active} onClose={() => setActiveId(null)} />}
     </>
   );
 }

@@ -1,4 +1,5 @@
 import type { CourseLevel } from '@/types/database.types';
+import { isValidSlug, slugify } from './slug';
 
 /**
  * Course validation — shared by the create and edit Server Actions.
@@ -10,6 +11,8 @@ import type { CourseLevel } from '@/types/database.types';
 /** Values ready to insert/update (arrays + numbers parsed). */
 export interface CourseValues {
   name: string;
+  /** URL key: /courses/<slug>. Unique — the DB enforces it. */
+  slug: string;
   level: CourseLevel;
   duration: string;
   tagline: string;
@@ -42,6 +45,7 @@ export function parseList(value: string): string[] {
 /** Raw string inputs as they arrive from the form. */
 export interface RawCourse {
   name: string;
+  slug: string;
   level: string;
   duration: string;
   tagline: string;
@@ -60,8 +64,17 @@ export function validateCourse(raw: RawCourse): {
   values: CourseValues;
   fieldErrors: CourseFormState['fieldErrors'];
 } {
+  const name = raw.name?.trim() ?? '';
+
+  // An empty slug field means "derive it from the name" — the common case when
+  // adding a course. A filled one is respected as typed, so an existing URL can
+  // stay put even after the programme is renamed.
+  const rawSlug = raw.slug?.trim() ?? '';
+  const slug = rawSlug ? rawSlug.toLowerCase() : slugify(name);
+
   const values: CourseValues = {
-    name: raw.name?.trim() ?? '',
+    name,
+    slug,
     level: raw.level === 'PG' ? 'PG' : 'UG',
     duration: raw.duration?.trim() ?? '',
     tagline: raw.tagline?.trim() ?? '',
@@ -77,6 +90,15 @@ export function validateCourse(raw: RawCourse): {
 
   const fieldErrors: CourseFormState['fieldErrors'] = {};
   if (values.name.length < 2) fieldErrors.name = 'Enter a course name.';
+
+  // The slug lands in a public URL, so it has to be checked even though it is
+  // usually generated. An empty result means the name had no usable characters.
+  if (!values.slug) {
+    fieldErrors.slug = 'Could not build a URL from this name — enter one manually.';
+  } else if (!isValidSlug(values.slug)) {
+    fieldErrors.slug = 'Use lowercase letters, numbers and single hyphens only.';
+  }
+
   if (!values.duration) fieldErrors.duration = 'Enter a duration (e.g. “3 years”).';
   if (!values.tagline) fieldErrors.tagline = 'Add a short tagline.';
   if (!values.about) fieldErrors.about = 'Add a description.';

@@ -19,6 +19,8 @@ export interface Database {
         Row: {
           id: string;
           name: string;
+          /** URL key for /courses/<slug> — unique. See migration 0003. */
+          slug: string;
           level: CourseLevel;
           duration: string;
           tagline: string;
@@ -36,6 +38,7 @@ export interface Database {
         Insert: {
           id?: string;
           name: string;
+          slug: string;
           level: CourseLevel;
           duration: string;
           tagline: string;

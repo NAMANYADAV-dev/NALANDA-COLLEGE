@@ -14,9 +14,10 @@ import type { SearchItem } from './types';
  * seed-fallback behaviour apply). The `/api/search` route serves this once to
  * the client, which then filters it locally.
  *
- * Each href carries a deep-link so selecting a result lands on the exact item:
- *   courses/faculty/notices → `/route#type-<id>` (scrolled + highlighted)
- *   gallery                 → `/gallery?photo=<id>` (opens the lightbox)
+ * Each href lands on the exact item:
+ *   courses         → `/courses/<slug>` (a real page of its own)
+ *   faculty/notices → `/route#type-<id>` (scrolled + highlighted)
+ *   gallery         → `/gallery?photo=<id>` (opens the lightbox)
  */
 
 /** Static, always-present destinations. */
@@ -49,7 +50,7 @@ export async function buildSearchIndex(): Promise<SearchItem[]> {
       type: 'course',
       title: c.name,
       subtitle: `${c.level} · ${c.duration}`,
-      href: `/courses#course-${c.id}`,
+      href: `/courses/${c.slug}`,
       keywords: [c.tagline, c.eligibility, ...c.subjects, ...c.careers].join(' '),
     });
   }

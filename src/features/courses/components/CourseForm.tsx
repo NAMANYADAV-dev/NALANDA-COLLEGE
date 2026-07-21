@@ -43,6 +43,26 @@ export function CourseForm({
           <input name="name" defaultValue={course?.name} placeholder="e.g. Bachelor of Science" className={inputClass} />
         </Field>
 
+        <Field
+          label="Page URL"
+          error={err.slug}
+          hint={
+            course
+              ? 'Changing this breaks existing links and loses the page’s search ranking — only change it if you must.'
+              : 'Leave blank to build it from the course name.'
+          }
+        >
+          <div className="flex items-center gap-1.5">
+            <span className="flex-none text-[13px] text-muted">/courses/</span>
+            <input
+              name="slug"
+              defaultValue={course?.slug}
+              placeholder="bachelor-of-science"
+              className={inputClass}
+            />
+          </div>
+        </Field>
+
         <div className="grid gap-5 sm:grid-cols-3">
           <Field label="Level">
             <select name="level" defaultValue={course?.level ?? 'UG'} className={inputClass}>

@@ -9,7 +9,7 @@ import type { Course, CourseLevel } from '@/types/database.types';
  */
 export const COURSES_FALLBACK: Course[] = [
   {
-    id: 'ba', name: 'Bachelor of Arts', level: 'UG', duration: '3 years',
+    id: 'ba', slug: 'bachelor-of-arts', name: 'Bachelor of Arts', level: 'UG', duration: '3 years',
     tagline: 'Humanities, languages & social sciences · 3 years',
     about: 'A broad foundation in the humanities, letting students combine languages, history, political science and economics.',
     seats: 240, fee: '₹12,000',
@@ -19,7 +19,7 @@ export const COURSES_FALLBACK: Course[] = [
     sort_order: 1, is_published: true, created_at: '', updated_at: '',
   },
   {
-    id: 'bsc', name: 'Bachelor of Science', level: 'UG', duration: '3 years',
+    id: 'bsc', slug: 'bachelor-of-science', name: 'Bachelor of Science', level: 'UG', duration: '3 years',
     tagline: 'Physics, chemistry, maths & life sciences · 3 years',
     about: 'A rigorous science programme with strong laboratory practice across physical and life sciences.',
     seats: 180, fee: '₹16,000',
@@ -29,7 +29,7 @@ export const COURSES_FALLBACK: Course[] = [
     sort_order: 2, is_published: true, created_at: '', updated_at: '',
   },
   {
-    id: 'llb', name: 'Bachelor of Laws', level: 'UG', duration: '3 years',
+    id: 'llb', slug: 'bachelor-of-laws', name: 'Bachelor of Laws', level: 'UG', duration: '3 years',
     tagline: 'LLB — constitutional, corporate & criminal law · 3 years',
     about: 'A professional law degree covering constitutional, corporate, criminal and civil law with moot-court practice.',
     seats: 120, fee: '₹22,000',
@@ -39,7 +39,7 @@ export const COURSES_FALLBACK: Course[] = [
     sort_order: 3, is_published: true, created_at: '', updated_at: '',
   },
   {
-    id: 'ma', name: 'Master of Arts', level: 'PG', duration: '2 years',
+    id: 'ma', slug: 'master-of-arts', name: 'Master of Arts', level: 'PG', duration: '2 years',
     tagline: 'Advanced humanities & research · 2 years',
     about: 'Advanced study and research in a chosen humanities specialisation, with a dissertation component.',
     seats: 80, fee: '₹14,000',
@@ -49,7 +49,7 @@ export const COURSES_FALLBACK: Course[] = [
     sort_order: 4, is_published: true, created_at: '', updated_at: '',
   },
   {
-    id: 'msc', name: 'Master of Science', level: 'PG', duration: '2 years',
+    id: 'msc', slug: 'master-of-science', name: 'Master of Science', level: 'PG', duration: '2 years',
     tagline: 'Specialised science & laboratory research · 2 years',
     about: 'Specialised, research-driven science education with dedicated laboratory and project work.',
     seats: 60, fee: '₹20,000',
@@ -59,7 +59,7 @@ export const COURSES_FALLBACK: Course[] = [
     sort_order: 5, is_published: true, created_at: '', updated_at: '',
   },
   {
-    id: 'bsc-ag', name: 'B.Sc Agriculture', level: 'UG', duration: '4 years',
+    id: 'bsc-ag', slug: 'b-sc-agriculture', name: 'B.Sc Agriculture', level: 'UG', duration: '4 years',
     tagline: 'Agronomy, horticulture & agri-tech · 4 years',
     about: 'A four-year professional programme blending agronomy, horticulture and modern agri-technology with field training.',
     seats: 100, fee: '₹24,000',

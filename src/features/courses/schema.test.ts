@@ -3,6 +3,7 @@ import { validateCourse, parseList, type RawCourse } from './schema';
 
 const base: RawCourse = {
   name: 'Bachelor of Science',
+  slug: '', // blank = derive from name, which is the normal path
   level: 'UG',
   duration: '3 years',
   tagline: 'Explore the sciences',
@@ -21,6 +22,39 @@ describe('parseList', () => {
     expect(parseList('Physics\nChemistry, Maths')).toEqual(['Physics', 'Chemistry', 'Maths']);
     expect(parseList('  a ,, b \n')).toEqual(['a', 'b']);
     expect(parseList('')).toEqual([]);
+  });
+});
+
+describe('validateCourse — slug', () => {
+  it('derives the slug from the name when the field is left blank', () => {
+    const { values } = validateCourse(base);
+    expect(values.slug).toBe('bachelor-of-science');
+  });
+
+  it('keeps a hand-written slug, so renaming a course need not move its URL', () => {
+    const { ok, values } = validateCourse({ ...base, name: 'B.Sc. (Hons)', slug: 'bachelor-of-science' });
+    expect(ok).toBe(true);
+    expect(values.slug).toBe('bachelor-of-science');
+  });
+
+  it('lowercases a hand-written slug rather than rejecting it', () => {
+    expect(validateCourse({ ...base, slug: 'Bachelor-Of-Science' }).values.slug).toBe(
+      'bachelor-of-science',
+    );
+  });
+
+  it('rejects a malformed hand-written slug', () => {
+    for (const bad of ['has space', 'double--hyphen', '-leading', 'trailing-', 'slash/es']) {
+      const { ok, fieldErrors } = validateCourse({ ...base, slug: bad });
+      expect(ok, `expected "${bad}" to be rejected`).toBe(false);
+      expect(fieldErrors?.slug).toBeDefined();
+    }
+  });
+
+  it('asks for a manual slug when the name has nothing slug-able', () => {
+    const { ok, fieldErrors } = validateCourse({ ...base, name: '!!!', slug: '' });
+    expect(ok).toBe(false);
+    expect(fieldErrors?.slug).toBeDefined();
   });
 });
 

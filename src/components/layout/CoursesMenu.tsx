@@ -115,7 +115,7 @@ function CourseColumn({
         courses.map((c) => (
           <Link
             key={c.id}
-            href={`/courses#course-${c.id}`}
+            href={`/courses/${c.slug}`}
             onClick={onNavigate}
             className="flex items-center justify-between gap-3 rounded-md px-2 py-2 transition-colors hover:bg-section-alt"
           >

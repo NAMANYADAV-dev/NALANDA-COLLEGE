@@ -21,16 +21,33 @@ import { validateCourse, type CourseFormState, type RawCourse } from './schema';
 
 /** Re-render everywhere a course appears. */
 function revalidateCourses() {
-  revalidatePath('/', 'layout'); // public pages + nav mega-menu
+  revalidatePath('/', 'layout'); // public pages + nav mega-menu + /courses/[slug]
   revalidatePath('/admin/courses');
   revalidatePath('/admin/dashboard');
 }
+
+/**
+ * Postgres unique-violation? The `courses_slug_key` index (migration 0003) is
+ * what stops two programmes claiming the same URL. Turn that raw constraint
+ * error into an error on the field the admin can actually fix, instead of the
+ * generic "could not save" that leaves them guessing.
+ */
+function isDuplicateSlug(err: unknown): boolean {
+  return (err as { code?: string })?.code === '23505';
+}
+
+const DUPLICATE_SLUG_STATE: CourseFormState = {
+  status: 'error',
+  message: 'Please fix the highlighted fields.',
+  fieldErrors: { slug: 'Another course already uses this URL. Pick a different one.' },
+};
 
 /** Read the form into the raw shape the validator expects. */
 function readForm(formData: FormData): RawCourse {
   const g = (k: string) => String(formData.get(k) ?? '');
   return {
     name: g('name'),
+    slug: g('slug'),
     level: g('level'),
     duration: g('duration'),
     tagline: g('tagline'),
@@ -60,6 +77,7 @@ export async function createCourse(
     const { error } = await supabase.from('courses').insert(values);
     if (error) throw error;
   } catch (err) {
+    if (isDuplicateSlug(err)) return DUPLICATE_SLUG_STATE;
     console.error('[courses] create failed:', (err as Error).message);
     return { status: 'error', message: 'Could not save the course. Please try again.' };
   }
@@ -84,6 +102,7 @@ export async function updateCourse(
     const { error } = await supabase.from('courses').update(values).eq('id', id);
     if (error) throw error;
   } catch (err) {
+    if (isDuplicateSlug(err)) return DUPLICATE_SLUG_STATE;
     console.error('[courses] update failed:', (err as Error).message);
     return { status: 'error', message: 'Could not update the course. Please try again.' };
   }
