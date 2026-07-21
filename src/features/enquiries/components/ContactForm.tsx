@@ -29,30 +29,37 @@ export function ContactForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-[18px]">
+      {/* Applies the contact rules server-side: message required, phone and
+          subject optional. See EnquiryVariant in ../schema.ts. */}
+      <input type="hidden" name="variant" value="contact" />
+
       <h2 className="font-head text-[22px] font-semibold text-navy dark:text-gold-hi">
         Send us a message
       </h2>
 
       {state.status === 'error' && state.message && (
-        <p className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#b91c1c]">
+        <p
+          role="alert"
+          className="rounded-lg bg-[rgba(214,69,69,.08)] px-4 py-3 text-sm text-[#b91c1c]"
+        >
           {state.message}
         </p>
       )}
 
       <Field label="Name" htmlFor="name" required error={state.fieldErrors?.name}>
-        <input id="name" name="name" placeholder="Your name" className={`${fieldClass} h-[46px]`} />
+        <input id="name" name="name" defaultValue={state.values?.name ?? ''} placeholder="Your name" className={`${fieldClass} h-[46px]`} />
       </Field>
 
       <Field label="Email" htmlFor="email" required error={state.fieldErrors?.email}>
-        <input id="email" name="email" type="email" placeholder="you@example.com" className={`${fieldClass} h-[46px]`} />
+        <input id="email" name="email" type="email" defaultValue={state.values?.email ?? ''} placeholder="you@example.com" className={`${fieldClass} h-[46px]`} />
       </Field>
 
-      <Field label="Subject" htmlFor="subject">
-        <input id="subject" name="subject" placeholder="What is this about?" className={`${fieldClass} h-[46px]`} />
+      <Field label="Subject" htmlFor="subject" optional error={state.fieldErrors?.subject}>
+        <input id="subject" name="subject" defaultValue={state.values?.subject ?? ''} placeholder="What is this about?" className={`${fieldClass} h-[46px]`} />
       </Field>
 
       <Field label="Message" htmlFor="message" required error={state.fieldErrors?.message}>
-        <textarea id="message" name="message" placeholder="How can we help?" className={`${fieldClass} min-h-[120px] resize-y py-3`} />
+        <textarea id="message" name="message" defaultValue={state.values?.message ?? ''} placeholder="How can we help?" className={`${fieldClass} min-h-[120px] resize-y py-3`} />
       </Field>
 
       <Honeypot />

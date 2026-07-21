@@ -6,6 +6,7 @@ import { requireAdmin } from '@/features/admin/auth/session';
 import type { EnquiryStatus } from '@/types/database.types';
 import { notifyNewEnquiry } from './notify';
 import {
+  toEnquiryVariant,
   validateEnquiry,
   type EnquiryFormState,
   type EnquiryInput,
@@ -39,9 +40,19 @@ export async function submitEnquiry(
     message: (formData.get('message') as string) ?? '',
   };
 
-  const { ok, values, fieldErrors } = validateEnquiry(raw);
+  // Which form posted this decides which fields are mandatory. The value comes
+  // from a hidden input, so it's untrusted — narrow it to a known variant
+  // rather than indexing the rules with whatever arrived.
+  const variant = toEnquiryVariant(formData.get('variant'));
+
+  const { ok, values, fieldErrors } = validateEnquiry(raw, variant);
   if (!ok) {
-    return { status: 'error', message: 'Please fix the highlighted fields.', fieldErrors };
+    return {
+      status: 'error',
+      message: 'Please fix the highlighted fields.',
+      fieldErrors,
+      values, // echo back so the form refills itself — see EnquiryFormState.values
+    };
   }
 
   try {
@@ -63,6 +74,7 @@ export async function submitEnquiry(
       return {
         status: 'error',
         message: `You've already sent a message from this email. Please wait about ${mins} minute${mins === 1 ? '' : 's'} before sending another.`,
+        values,
       };
     }
 
@@ -76,6 +88,7 @@ export async function submitEnquiry(
       status: 'error',
       message:
         'Something went wrong sending your message. Please try again, or email us directly.',
+      values,
     };
   }
 }
