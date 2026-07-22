@@ -3,7 +3,10 @@
 import { useActionState } from 'react';
 import { submitEnquiry } from '@/features/enquiries/actions';
 import { INITIAL_ENQUIRY_STATE } from '@/features/enquiries/schema';
-import { Field, Honeypot, SubmitButton, SuccessPanel, fieldClass } from './form-parts';
+import { Field, Honeypot, SubmitButton, SuccessPanel, fieldClass, useFocusFirstError } from './form-parts';
+
+/** Field ids top-to-bottom — drives focus-first-error on a server rejection. */
+const FIELD_ORDER = ['name', 'email', 'subject', 'message'] as const;
 
 /**
  * ContactForm — general "Send us a message" form (Contact page).
@@ -15,6 +18,7 @@ import { Field, Honeypot, SubmitButton, SuccessPanel, fieldClass } from './form-
  */
 export function ContactForm() {
   const [state, formAction] = useActionState(submitEnquiry, INITIAL_ENQUIRY_STATE);
+  useFocusFirstError(state.status, state.fieldErrors, FIELD_ORDER);
 
   if (state.status === 'success') {
     return (
@@ -47,11 +51,11 @@ export function ContactForm() {
       )}
 
       <Field label="Name" htmlFor="name" required error={state.fieldErrors?.name}>
-        <input id="name" name="name" defaultValue={state.values?.name ?? ''} placeholder="Your name" className={`${fieldClass} h-[46px]`} />
+        <input id="name" name="name" required defaultValue={state.values?.name ?? ''} placeholder="Your name" className={`${fieldClass} h-[46px]`} />
       </Field>
 
       <Field label="Email" htmlFor="email" required error={state.fieldErrors?.email}>
-        <input id="email" name="email" type="email" defaultValue={state.values?.email ?? ''} placeholder="you@example.com" className={`${fieldClass} h-[46px]`} />
+        <input id="email" name="email" type="email" required defaultValue={state.values?.email ?? ''} placeholder="you@example.com" className={`${fieldClass} h-[46px]`} />
       </Field>
 
       <Field label="Subject" htmlFor="subject" optional error={state.fieldErrors?.subject}>
@@ -59,7 +63,7 @@ export function ContactForm() {
       </Field>
 
       <Field label="Message" htmlFor="message" required error={state.fieldErrors?.message}>
-        <textarea id="message" name="message" defaultValue={state.values?.message ?? ''} placeholder="How can we help?" className={`${fieldClass} min-h-[120px] resize-y py-3`} />
+        <textarea id="message" name="message" required defaultValue={state.values?.message ?? ''} placeholder="How can we help?" className={`${fieldClass} min-h-[120px] resize-y py-3`} />
       </Field>
 
       <Honeypot />

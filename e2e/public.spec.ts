@@ -84,12 +84,20 @@ test.describe('Accessibility — gallery lightbox (WCAG 2.1.2 / 2.4.3)', () => {
 });
 
 test.describe('Admissions form', () => {
-  test('rejects an empty submission with a visible error', async ({ page }) => {
+  test('an empty submission is blocked by client-side validation', async ({ page }) => {
     await page.goto('/admissions');
 
     await page.getByRole('button', { name: 'Submit inquiry' }).click();
 
-    // The server action re-renders with the error banner (role="alert").
-    await expect(page.getByRole('alert')).toBeVisible();
+    // Native constraint validation stops the submit before it reaches the
+    // server and moves focus to the first invalid field (Full name).
+    await expect(page.locator('#name')).toBeFocused();
+    const nameValid = await page
+      .locator('#name')
+      .evaluate((el) => (el as HTMLInputElement).checkValidity());
+    expect(nameValid).toBe(false);
+
+    // Still on the form (no success panel), so nothing was submitted.
+    await expect(page.getByRole('heading', { name: 'Admission inquiry' })).toBeVisible();
   });
 });

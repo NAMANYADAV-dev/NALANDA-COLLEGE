@@ -1,9 +1,31 @@
 'use client';
 
 import { useFormStatus } from 'react-dom';
-import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
+import { cloneElement, isValidElement, useEffect, type ReactElement, type ReactNode } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { Icon } from '@/components/ui/Icon';
+
+/**
+ * Move keyboard focus to the first field the server rejected.
+ *
+ * Native constraint validation (required / type / pattern) already focuses the
+ * first invalid field before submit, but rules only the server can check —
+ * format edge cases, the rate-limit cooldown — come back in `fieldErrors`.
+ * Without this the visitor sees the red banner but has to hunt for which field
+ * to fix. `order` lists the field ids top-to-bottom so focus lands on the
+ * first one, matching reading order (WCAG 3.3.1 / 2.4.3).
+ */
+export function useFocusFirstError(
+  status: string,
+  fieldErrors: Partial<Record<string, string>> | undefined,
+  order: readonly string[],
+) {
+  useEffect(() => {
+    if (status !== 'error' || !fieldErrors) return;
+    const first = order.find((id) => fieldErrors[id]);
+    if (first) document.getElementById(first)?.focus();
+  }, [status, fieldErrors, order]);
+}
 
 /** Shared input styling for text inputs, selects and textareas. */
 export const fieldClass =

@@ -4,7 +4,10 @@ import { useActionState } from 'react';
 import Link from 'next/link';
 import { submitEnquiry } from '@/features/enquiries/actions';
 import { INITIAL_ENQUIRY_STATE } from '@/features/enquiries/schema';
-import { Field, Honeypot, SubmitButton, SuccessPanel, fieldClass } from './form-parts';
+import { Field, Honeypot, SubmitButton, SuccessPanel, fieldClass, useFocusFirstError } from './form-parts';
+
+/** Field ids top-to-bottom — drives focus-first-error on a server rejection. */
+const FIELD_ORDER = ['name', 'email', 'phone', 'subject', 'message'] as const;
 
 /**
  * AdmissionForm — admission inquiry form (Admissions page).
@@ -20,6 +23,7 @@ import { Field, Honeypot, SubmitButton, SuccessPanel, fieldClass } from './form-
  */
 export function AdmissionForm({ courses }: { courses: string[] }) {
   const [state, formAction] = useActionState(submitEnquiry, INITIAL_ENQUIRY_STATE);
+  useFocusFirstError(state.status, state.fieldErrors, FIELD_ORDER);
 
   if (state.status === 'success') {
     return (
@@ -61,18 +65,21 @@ export function AdmissionForm({ courses }: { courses: string[] }) {
       )}
 
       <Field label="Full name" htmlFor="name" required error={state.fieldErrors?.name}>
-        <input id="name" name="name" defaultValue={state.values?.name ?? ''} placeholder="e.g. Priya Sharma" className={`${fieldClass} h-[46px]`} />
+        <input id="name" name="name" required defaultValue={state.values?.name ?? ''} placeholder="e.g. Priya Sharma" className={`${fieldClass} h-[46px]`} />
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Email" htmlFor="email" required error={state.fieldErrors?.email}>
-          <input id="email" name="email" type="email" defaultValue={state.values?.email ?? ''} placeholder="you@example.com" className={`${fieldClass} h-[46px]`} />
+          <input id="email" name="email" type="email" required defaultValue={state.values?.email ?? ''} placeholder="you@example.com" className={`${fieldClass} h-[46px]`} />
         </Field>
         <Field label="Phone" htmlFor="phone" required error={state.fieldErrors?.phone}>
           <input
             id="phone"
             name="phone"
             type="tel"
+            required
+            pattern="[0-9]{10}"
+            title="Please enter a 10-digit mobile number"
             defaultValue={state.values?.phone ?? ''}
             inputMode="numeric"
             autoComplete="tel"
@@ -97,6 +104,7 @@ export function AdmissionForm({ courses }: { courses: string[] }) {
         <select
           id="subject"
           name="subject"
+          required
           defaultValue={state.values?.subject ?? ''}
           className={`${fieldClass} h-[46px]`}
         >
