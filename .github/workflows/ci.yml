@@ -87,3 +87,43 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  e2e-auth:
+    name: End-to-end — admin CRUD (test Supabase)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # Credentials come from repository secrets — a dedicated *test* Supabase
+      # project, NEVER production (playwright.admin.config.ts also refuses the
+      # prod ref). If the secrets are unset the spec's test.skip() turns this
+      # into a no-op pass instead of a failure, so forks aren't blocked.
+      - name: Run authenticated admin E2E
+        run: npm run test:e2e:auth
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          E2E_ADMIN_EMAIL: ${{ secrets.E2E_ADMIN_EMAIL }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-auth-report
+          path: playwright-report/
+          retention-days: 7

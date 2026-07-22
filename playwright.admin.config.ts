@@ -35,21 +35,27 @@ function loadE2EEnv(): Record<string, string> {
   return out;
 }
 
-const env = loadE2EEnv();
+const fileEnv = loadE2EEnv();
 
-// Safety rail: refuse to run against the known production project, even if
-// .env.e2e were misconfigured. This is destructive-write testing.
+// Resolve each value from .env.e2e first (local), then process.env (CI, where
+// the values arrive as GitHub Secrets instead of a file).
+const pick = (key: string) => fileEnv[key] || process.env[key] || '';
+const SUPABASE_URL = pick('NEXT_PUBLIC_SUPABASE_URL');
+const SUPABASE_ANON_KEY = pick('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+
+// Safety rail: refuse to run against the known production project, even if the
+// config were misconfigured. This is destructive-write testing.
 const PROD_REF = 'oehyjonihkttegaxpmxz';
-if (env.NEXT_PUBLIC_SUPABASE_URL?.includes(PROD_REF)) {
+if (SUPABASE_URL.includes(PROD_REF)) {
   throw new Error(
-    'playwright.admin.config: .env.e2e points at the PRODUCTION Supabase project. ' +
+    'playwright.admin.config: the Supabase URL is the PRODUCTION project. ' +
       'Point it at a dedicated test project before running admin CRUD tests.',
   );
 }
 
 // Expose credentials to the test process.
-process.env.E2E_ADMIN_EMAIL = env.E2E_ADMIN_EMAIL ?? '';
-process.env.E2E_ADMIN_PASSWORD = env.E2E_ADMIN_PASSWORD ?? '';
+process.env.E2E_ADMIN_EMAIL = pick('E2E_ADMIN_EMAIL');
+process.env.E2E_ADMIN_PASSWORD = pick('E2E_ADMIN_PASSWORD');
 
 const PORT = 3101;
 const baseURL = `http://localhost:${PORT}`;
@@ -72,8 +78,8 @@ export default defineConfig({
     // Merge so PATH etc. survive; the test-project vars override .env.local.
     env: {
       ...process.env,
-      NEXT_PUBLIC_SUPABASE_URL: env.NEXT_PUBLIC_SUPABASE_URL ?? '',
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
+      NEXT_PUBLIC_SUPABASE_URL: SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: SUPABASE_ANON_KEY,
     },
   },
 });
