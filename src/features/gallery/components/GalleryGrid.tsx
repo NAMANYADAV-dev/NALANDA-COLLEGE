@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { hasRealImage, tileGradient, tileHeight } from '@/features/gallery/data';
 import type { GalleryImage } from '@/types/database.types';
@@ -15,6 +15,17 @@ import type { GalleryImage } from '@/types/database.types';
 export function GalleryGrid({ images }: { images: GalleryImage[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const isOpen = openIndex !== null;
+
+  // The lightbox is a modal dialog: hold a ref to it so focus can be trapped
+  // inside while open, and remember which tile opened it so focus can return
+  // there on close (WCAG 2.4.3 Focus Order / 2.1.2 No Keyboard Trap).
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  const openAt = useCallback((index: number, trigger: HTMLElement) => {
+    triggerRef.current = trigger;
+    setOpenIndex(index);
+  }, []);
 
   const close = useCallback(() => setOpenIndex(null), []);
   const move = useCallback(
@@ -31,19 +42,55 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
     if (idx >= 0) setOpenIndex(idx);
   }, [images]);
 
-  // Keyboard controls + scroll lock while the lightbox is open.
+  // Keyboard controls + scroll lock + focus management while open.
   useEffect(() => {
     if (!isOpen) return;
+
+    const dialog = dialogRef.current;
+    // Move focus into the dialog so a screen reader announces it and the next
+    // Tab stays inside. Restored to the opening tile in the cleanup below.
+    const opener = triggerRef.current;
+    dialog?.focus();
+
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') close();
-      if (e.key === 'ArrowRight') move(1);
-      if (e.key === 'ArrowLeft') move(-1);
+      if (e.key === 'Escape') {
+        close();
+        return;
+      }
+      if (e.key === 'ArrowRight') {
+        move(1);
+        return;
+      }
+      if (e.key === 'ArrowLeft') {
+        move(-1);
+        return;
+      }
+      // Focus trap: keep Tab cycling among the dialog's own controls (close,
+      // prev, next) instead of leaking back to the page behind the overlay.
+      if (e.key === 'Tab' && dialog) {
+        const focusable = dialog.querySelectorAll<HTMLElement>('button:not([disabled])');
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || active === dialog)) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
+
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      // Return focus to the tile that opened the lightbox (skip on deep-link
+      // open, where there is no opener to return to).
+      opener?.focus();
     };
   }, [isOpen, close, move]);
 
@@ -56,7 +103,8 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
         {images.map((img, i) => (
           <button
             key={img.id}
-            onClick={() => setOpenIndex(i)}
+            onClick={(e) => openAt(i, e.currentTarget)}
+            aria-haspopup="dialog"
             className="mb-4 block w-full overflow-hidden rounded-xl [break-inside:avoid] transition hover:opacity-95"
           >
             <span
@@ -78,8 +126,13 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
       {/* Lightbox */}
       {current && (
         <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Gallery photo: ${current.title}`}
+          tabIndex={-1}
           onClick={close}
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(11,20,38,.92)] p-3 sm:p-10"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(11,20,38,.92)] p-3 outline-none sm:p-10"
         >
           <button
             onClick={close}

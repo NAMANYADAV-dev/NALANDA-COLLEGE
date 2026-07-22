@@ -1,3 +1,4 @@
+import { SkipLink } from '@/components/layout/SkipLink';
 import { SiteNav } from '@/components/layout/SiteNav';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { OrganizationJsonLd } from '@/components/seo/OrganizationJsonLd';
@@ -25,9 +26,12 @@ export default async function PublicLayout({ children }: { children: React.React
 
   return (
     <div className="flex min-h-screen flex-col">
+      <SkipLink />
       <OrganizationJsonLd contact={settings.contact} social={settings.social} />
       <SiteNav courses={courses} />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
+        {children}
+      </main>
       <SiteFooter contact={settings.contact} social={settings.social} />
     </div>
   );
