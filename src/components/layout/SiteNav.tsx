@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { primaryNav, exploreNav, siteConfig } from '@/config/site';
 import { Icon } from '@/components/ui/Icon';
@@ -23,37 +23,24 @@ import type { Course } from '@/types/database.types';
  */
 export function SiteNav({ courses }: { courses: Course[] }) {
   const pathname = usePathname();
-  const [langOpen, setLangOpen] = useState(false);
-  const [lang, setLang] = useState<'EN' | 'हिन्दी'>('EN');
   const [searchOpen, setSearchOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const langRef = useRef<HTMLDivElement>(null);
-
-  /** Close the popover menus when clicking outside or pressing Escape. */
+  /** Close the menus on Escape; ⌘K / Ctrl+K toggles search from anywhere. */
   useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
-    }
     function onKey(e: KeyboardEvent) {
-      // ⌘K / Ctrl+K toggles search from anywhere.
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setSearchOpen((v) => !v);
         return;
       }
       if (e.key === 'Escape') {
-        setLangOpen(false);
         setSearchOpen(false);
         setMenuOpen(false);
       }
     }
-    document.addEventListener('mousedown', onClick);
     document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onClick);
-      document.removeEventListener('keydown', onKey);
-    };
+    return () => document.removeEventListener('keydown', onKey);
   }, []);
 
   /** Lock body scroll while the mobile drawer is open. */
@@ -123,34 +110,6 @@ export function SiteNav({ courses }: { courses: Course[] }) {
 
           <ThemeToggle />
 
-          {/* Language switch (desktop) */}
-          <div className="relative hidden lg:block" ref={langRef}>
-            <button
-              onClick={() => setLangOpen((v) => !v)}
-              className="flex h-[38px] items-center gap-1.5 rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-navy hover:bg-section-alt dark:text-gold-hi"
-            >
-              <Icon name="globe" size={16} />
-              {lang}
-              <Icon name="chevron-down" size={11} />
-            </button>
-            {langOpen && (
-              <div className="absolute right-0 top-[calc(100%+10px)] z-20 min-w-[130px] animate-fade-in rounded-lg border border-border bg-surface p-1.5 shadow-[0_10px_30px_rgba(0,0,0,.12)]">
-                {(['EN', 'हिन्दी'] as const).map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => {
-                      setLang(l);
-                      setLangOpen(false);
-                    }}
-                    className="block w-full rounded-md px-3 py-2.5 text-left text-sm font-medium text-text hover:bg-section-alt hover:text-gold"
-                  >
-                    {l === 'EN' ? 'English' : 'हिन्दी'}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
           <Button href="/admissions" size="md" className="hidden sm:inline-flex shadow-none">
             Apply Now
           </Button>
@@ -193,28 +152,6 @@ export function SiteNav({ courses }: { courses: Course[] }) {
             <Button href="/admissions" size="lg" className="mt-3" onClick={() => setMenuOpen(false)}>
               Apply Now
             </Button>
-
-            {/* Language switch — the desktop version is hidden below lg, so the
-                drawer is the only place tablet/mobile users can change language. */}
-            <div className="mt-4 border-t border-border pt-4">
-              <div className="mb-2 px-1 text-[13px] font-semibold uppercase tracking-wide text-muted">
-                Language
-              </div>
-              <div className="inline-flex rounded-lg bg-section-alt p-1">
-                {(['EN', 'हिन्दी'] as const).map((l) => (
-                  <button
-                    key={l}
-                    onClick={() => setLang(l)}
-                    className={cn(
-                      'rounded-md px-4 py-2 text-sm font-semibold transition-colors',
-                      lang === l ? 'bg-surface text-navy shadow-card dark:text-gold-hi' : 'text-muted',
-                    )}
-                  >
-                    {l === 'EN' ? 'English' : 'हिन्दी'}
-                  </button>
-                ))}
-              </div>
-            </div>
           </nav>
         </div>
       )}
