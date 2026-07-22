@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useActionState, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
-import { INITIAL_COURSE_STATE, type CourseFormState, type CourseValues } from '@/features/courses/schema';
+import { INITIAL_COURSE_STATE, type CourseFormState } from '@/features/courses/schema';
 import type { Course } from '@/types/database.types';
 
 /**

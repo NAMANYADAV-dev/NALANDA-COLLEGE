@@ -7,9 +7,7 @@
 # No secrets are injected: `next build` degrades to the static seed data when
 # NEXT_PUBLIC_SUPABASE_URL is absent (see next.config.mjs and the query layer's
 # isSupabaseConfigured guards), so the build exercises the real render path
-# without touching a live database. Lint is intentionally not a gate yet — the
-# project has no ESLint config, and `next lint` would prompt interactively; add
-# it here once an eslint config lands.
+# without touching a live database.
 
 name: CI
 
@@ -45,6 +43,9 @@ jobs:
 
       - name: Type-check
         run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
 
       - name: Unit tests
         run: npm test
