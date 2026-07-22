@@ -19,6 +19,10 @@ const baseURL = `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: './e2e',
+  // The authenticated admin CRUD spec needs a real test Supabase project and
+  // runs from playwright.admin.config.ts instead — keep it out of this
+  // no-secrets suite so this one stays runnable with zero setup.
+  testIgnore: '**/admin-crud.spec.ts',
   // Fail the CI run if a `test.only` is accidentally committed.
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,

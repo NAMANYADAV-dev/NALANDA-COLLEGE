@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:auth": "playwright test --config=playwright.admin.config.ts",
     "db:types": "supabase gen types typescript --local > src/types/database.types.ts"
   },
   "dependencies": {
