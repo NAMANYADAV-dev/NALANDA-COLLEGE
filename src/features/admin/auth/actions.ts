@@ -1,7 +1,19 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+
+/**
+ * Best-effort client IP for login throttling. On Vercel the platform sets
+ * `x-forwarded-for`; locally it's usually absent, so we fall back to a constant
+ * (throttling still works, just bucketed together). Only the first hop matters.
+ */
+async function clientIp(): Promise<string> {
+  const h = await headers();
+  const fwd = h.get('x-forwarded-for');
+  return fwd?.split(',')[0]?.trim() || h.get('x-real-ip') || 'unknown';
+}
 
 /** Result state consumed by the login form (via useActionState). */
 export interface LoginState {
@@ -25,13 +37,33 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   }
 
   const supabase = await createServerSupabaseClient();
+  const ip = await clientIp();
+
+  // Throttle brute-force attempts by source IP. Fails open: if migration 0004
+  // hasn't been applied the RPC errors and we simply skip the check.
+  const { data: cooldown, error: throttleErr } = await supabase.rpc('login_cooldown_remaining', {
+    p_ip: ip,
+  });
+  if (!throttleErr && typeof cooldown === 'number' && cooldown > 0) {
+    return {
+      error: `Too many failed attempts from this network. Try again in about ${cooldown} minute${
+        cooldown === 1 ? '' : 's'
+      }.`,
+    };
+  }
+
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    // Count this failure toward the throttle (best-effort).
+    await supabase.rpc('record_login_failure', { p_ip: ip });
     return { error: 'Invalid credentials. Please check your email and password.' };
   }
 
-  // Redirect throws internally — must be called outside the try/catch above.
+  // Clean slate for this IP on success.
+  await supabase.rpc('clear_login_failures', { p_ip: ip });
+
+  // Redirect throws internally — must be called outside any try/catch.
   redirect('/admin/dashboard');
 }
 

@@ -222,6 +222,19 @@ export interface Database {
         Args: Record<string, never>;
         Returns: boolean;
       };
+      /** Login brute-force throttle — see supabase/migrations/0004_login_throttle.sql. */
+      login_cooldown_remaining: {
+        Args: { p_ip: string };
+        Returns: number;
+      };
+      record_login_failure: {
+        Args: { p_ip: string };
+        Returns: undefined;
+      };
+      clear_login_failures: {
+        Args: { p_ip: string };
+        Returns: undefined;
+      };
     };
     Enums: {
       course_level: CourseLevel;
