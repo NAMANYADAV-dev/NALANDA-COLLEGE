@@ -1,0 +1,53 @@
+# Continuous integration for the Nalanda College site.
+#
+# Runs on every push and on pull requests into main. Three gates, in the order
+# a developer would run them locally: types, unit tests, then a full production
+# build. Any red gate blocks the merge.
+#
+# No secrets are injected: `next build` degrades to the static seed data when
+# NEXT_PUBLIC_SUPABASE_URL is absent (see next.config.mjs and the query layer's
+# isSupabaseConfigured guards), so the build exercises the real render path
+# without touching a live database. Lint is intentionally not a gate yet — the
+# project has no ESLint config, and `next lint` would prompt interactively; add
+# it here once an eslint config lands.
+
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+# One in-flight run per branch; a newer push cancels the older run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Type-check, test, build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # `npm ci` installs exactly what package-lock.json pins — reproducible and
+      # faster than `npm install`, and it fails if the lockfile is out of sync.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Production build
+        run: npm run build
