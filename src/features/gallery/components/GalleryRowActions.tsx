@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { Icon } from '@/components/ui/Icon';
+import { useRowAction } from '@/components/admin/Toast';
 import { deleteGalleryImage, toggleGalleryPublished } from '@/features/gallery/actions';
 
 /**
@@ -13,12 +14,11 @@ import { deleteGalleryImage, toggleGalleryPublished } from '@/features/gallery/a
  * pending state. Delete uses a two-step inline confirm (no native dialog).
  */
 export function GalleryRowActions({ id, isPublished }: { id: string; isPublished: boolean }) {
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = useRowAction();
   const [confirming, setConfirming] = useState(false);
 
-  const togglePublish = () =>
-    startTransition(() => toggleGalleryPublished(id, !isPublished).catch(() => {}));
-  const remove = () => startTransition(() => deleteGalleryImage(id).catch(() => {}));
+  const togglePublish = () => run(() => toggleGalleryPublished(id, !isPublished));
+  const remove = () => run(() => deleteGalleryImage(id));
 
   return (
     <div className="flex items-center gap-2">

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { Icon } from '@/components/ui/Icon';
+import { useRowAction } from '@/components/admin/Toast';
 import { updateEnquiryStatus, deleteEnquiry } from '@/features/enquiries/actions';
 import type { EnquiryStatus } from '@/types/database.types';
 
@@ -23,11 +24,11 @@ export function StatusActions({
   status: EnquiryStatus;
   compact?: boolean;
 }) {
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = useRowAction();
   const [confirming, setConfirming] = useState(false);
 
-  const set = (next: EnquiryStatus) => startTransition(() => updateEnquiryStatus(id, next));
-  const remove = () => startTransition(() => deleteEnquiry(id).catch(() => {}));
+  const set = (next: EnquiryStatus) => run(() => updateEnquiryStatus(id, next));
+  const remove = () => run(() => deleteEnquiry(id));
 
   if (compact) {
     return status === 'resolved' ? (

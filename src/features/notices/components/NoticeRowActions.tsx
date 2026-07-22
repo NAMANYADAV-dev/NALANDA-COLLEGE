@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { Icon } from '@/components/ui/Icon';
+import { useRowAction } from '@/components/admin/Toast';
 import { deleteNotice, toggleNoticePublished } from '@/features/notices/actions';
 
 /**
@@ -13,12 +14,11 @@ import { deleteNotice, toggleNoticePublished } from '@/features/notices/actions'
  * pending state. Delete uses a two-step inline confirm (no native dialog).
  */
 export function NoticeRowActions({ id, isPublished }: { id: string; isPublished: boolean }) {
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = useRowAction();
   const [confirming, setConfirming] = useState(false);
 
-  const togglePublish = () =>
-    startTransition(() => toggleNoticePublished(id, !isPublished).catch(() => {}));
-  const remove = () => startTransition(() => deleteNotice(id).catch(() => {}));
+  const togglePublish = () => run(() => toggleNoticePublished(id, !isPublished));
+  const remove = () => run(() => deleteNotice(id));
 
   return (
     <div className="flex items-center justify-end gap-2">

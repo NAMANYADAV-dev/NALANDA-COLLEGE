@@ -1,4 +1,5 @@
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { Toaster } from '@/components/admin/Toast';
 import { getDashboardMetrics, getAdminProfile } from '@/features/admin/queries';
 import { requireAdmin } from '@/features/admin/auth/session';
 
@@ -24,6 +25,7 @@ export default async function AdminPanelLayout({ children }: { children: React.R
     <div className="flex min-h-screen bg-[#f4f6fa] dark:bg-bg">
       <AdminSidebar enquiriesNew={metrics.enquiriesNew} profile={profile} />
       <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+      <Toaster />
     </div>
   );
 }

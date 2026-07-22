@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { Icon } from '@/components/ui/Icon';
+import { useRowAction } from '@/components/admin/Toast';
 import { deleteDownload, toggleDownloadPublished } from '@/features/downloads/actions';
 
 /**
@@ -13,12 +14,11 @@ import { deleteDownload, toggleDownloadPublished } from '@/features/downloads/ac
  * pending state. Delete uses a two-step inline confirm (no native dialog).
  */
 export function DownloadRowActions({ id, isPublished }: { id: string; isPublished: boolean }) {
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = useRowAction();
   const [confirming, setConfirming] = useState(false);
 
-  const togglePublish = () =>
-    startTransition(() => toggleDownloadPublished(id, !isPublished).catch(() => {}));
-  const remove = () => startTransition(() => deleteDownload(id).catch(() => {}));
+  const togglePublish = () => run(() => toggleDownloadPublished(id, !isPublished));
+  const remove = () => run(() => deleteDownload(id));
 
   return (
     <div className="flex items-center justify-end gap-2">

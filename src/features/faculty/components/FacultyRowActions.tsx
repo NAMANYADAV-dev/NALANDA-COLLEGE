@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { cn } from '@/lib/utils/cn';
 import { Icon } from '@/components/ui/Icon';
+import { useRowAction } from '@/components/admin/Toast';
 import { deleteFaculty, toggleFacultyPublished } from '@/features/faculty/actions';
 
 /**
@@ -14,12 +15,11 @@ import { deleteFaculty, toggleFacultyPublished } from '@/features/faculty/action
  * misclick can't destroy data.
  */
 export function FacultyRowActions({ id, isPublished }: { id: string; isPublished: boolean }) {
-  const [pending, startTransition] = useTransition();
+  const { pending, run } = useRowAction();
   const [confirming, setConfirming] = useState(false);
 
-  const togglePublish = () =>
-    startTransition(() => toggleFacultyPublished(id, !isPublished).catch(() => {}));
-  const remove = () => startTransition(() => deleteFaculty(id).catch(() => {}));
+  const togglePublish = () => run(() => toggleFacultyPublished(id, !isPublished));
+  const remove = () => run(() => deleteFaculty(id));
 
   return (
     <div className="flex items-center justify-end gap-2">
