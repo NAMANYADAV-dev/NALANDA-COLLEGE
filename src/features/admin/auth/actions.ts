@@ -81,12 +81,32 @@ export interface ResetRequestState {
 }
 
 /**
+ * The origin the user is actually browsing (works on any deployment domain —
+ * prod, preview, localhost). Server actions receive an Origin header; behind
+ * Vercel's proxy we can also rebuild it from x-forwarded-*. Falling back to an
+ * env var last means the reset link never silently points at localhost just
+ * because NEXT_PUBLIC_SITE_URL wasn't set on the host.
+ */
+async function requestOrigin(): Promise<string> {
+  const h = await headers();
+  const origin = h.get('origin');
+  if (origin) return origin;
+  const host = h.get('x-forwarded-host') ?? h.get('host');
+  if (host) return `${h.get('x-forwarded-proto') ?? 'https'}://${host}`;
+  return process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+}
+
+/**
  * requestPasswordReset — email a recovery link to the given address.
  *
  * The link points at /auth/callback, which exchanges the recovery code for a
  * short-lived session and forwards to /admin/reset-password. We always return a
  * neutral "sent" result (never revealing whether the email is registered) and
  * log real failures server-side. Emails require SMTP configured in Supabase.
+ *
+ * NOTE: the callback URL must also be on the Supabase Auth redirect allow-list
+ * (Dashboard → Authentication → URL Configuration), or Supabase ignores
+ * `redirectTo` and falls back to its own Site URL setting.
  */
 export async function requestPasswordReset(
   _prev: ResetRequestState,
@@ -95,7 +115,7 @@ export async function requestPasswordReset(
   const email = String(formData.get('email') ?? '').trim();
   if (!email) return { status: 'error', message: 'Enter your email address.' };
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const siteUrl = await requestOrigin();
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${siteUrl}/auth/callback?next=/admin/reset-password`,
