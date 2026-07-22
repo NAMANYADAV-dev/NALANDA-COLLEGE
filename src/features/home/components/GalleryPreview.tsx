@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Section } from '@/components/ui/Section';
 import { cn } from '@/lib/utils/cn';
@@ -38,17 +39,22 @@ export function GalleryPreview({ images }: { images: GalleryImage[] }) {
               key={img.id}
               href="/gallery"
               aria-label={img.title}
-              style={
-                hasRealImage(img.image_url)
-                  ? { backgroundImage: `url(${img.image_url})` }
-                  : { backgroundImage: tileGradient(i) }
-              }
+              style={{ backgroundImage: tileGradient(i) }}
               className={cn(
-                'group relative flex items-end overflow-hidden rounded-[10px] bg-cover bg-center transition hover:brightness-105',
+                'group relative flex items-end overflow-hidden rounded-[10px] bg-cover bg-center',
                 i === 0 && 'row-span-2', // first image is featured (spans both rows)
               )}
             >
-              <span className="w-full bg-gradient-to-b from-transparent to-[rgba(18,41,77,.72)] px-4 py-3 text-left text-[13px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+              {hasRealImage(img.image_url) && (
+                <Image
+                  src={img.image_url}
+                  alt={img.title}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                  className="object-cover transition group-hover:brightness-105"
+                />
+              )}
+              <span className="relative z-10 w-full bg-gradient-to-b from-transparent to-[rgba(18,41,77,.72)] px-4 py-3 text-left text-[13px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
                 {img.title}
               </span>
             </Link>

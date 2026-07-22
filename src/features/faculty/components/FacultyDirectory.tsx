@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { FilterPills, type FilterOption } from '@/components/ui/FilterPills';
 import { departmentColor, facultyInitials } from '@/features/faculty/data';
@@ -83,14 +84,18 @@ export function FacultyDirectory({ faculty }: { faculty: Faculty[] }) {
               >
                 {/* Avatar banner — real photo if available, else initials on a department colour */}
                 <div
-                  className="flex h-[150px] items-center justify-center bg-cover bg-center"
-                  style={
-                    person.photo_url
-                      ? { backgroundImage: `url(${person.photo_url})` }
-                      : { backgroundColor: departmentColor(person.department) }
-                  }
+                  className="relative flex h-[150px] items-center justify-center overflow-hidden"
+                  style={{ backgroundColor: departmentColor(person.department) }}
                 >
-                  {!person.photo_url && (
+                  {person.photo_url ? (
+                    <Image
+                      src={person.photo_url}
+                      alt={person.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover"
+                    />
+                  ) : (
                     <span className="flex h-[76px] w-[76px] items-center justify-center rounded-full bg-white/[0.18] font-head text-[28px] font-bold text-white">
                       {facultyInitials(person.name)}
                     </span>

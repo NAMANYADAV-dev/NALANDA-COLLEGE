@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { hasRealImage, tileGradient, tileHeight } from '@/features/gallery/data';
@@ -108,14 +109,21 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
             className="mb-4 block w-full overflow-hidden rounded-xl [break-inside:avoid] transition hover:opacity-95"
           >
             <span
-              className="flex items-end bg-cover bg-center"
-              style={
-                hasRealImage(img.image_url)
-                  ? { backgroundImage: `url(${img.image_url})`, height: tileHeight(i) }
-                  : { background: tileGradient(i), height: tileHeight(i) }
-              }
+              className="relative flex items-end"
+              // The gradient doubles as the loading placeholder behind a real
+              // photo, so there's never a blank flash while next/image streams in.
+              style={{ height: tileHeight(i), background: tileGradient(i) }}
             >
-              <span className="w-full bg-gradient-to-b from-transparent to-[rgba(18,41,77,.7)] px-4 py-3.5 text-left text-[13px] font-medium text-white">
+              {hasRealImage(img.image_url) && (
+                <Image
+                  src={img.image_url}
+                  alt={img.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover"
+                />
+              )}
+              <span className="relative z-10 w-full bg-gradient-to-b from-transparent to-[rgba(18,41,77,.7)] px-4 py-3.5 text-left text-[13px] font-medium text-white">
                 {img.title}
               </span>
             </span>
@@ -153,14 +161,20 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
           </button>
 
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-[820px]">
-            <div
-              className="h-[60vh] max-h-[520px] rounded-xl bg-cover bg-center shadow-[0_30px_80px_rgba(0,0,0,.5)]"
-              style={
-                hasRealImage(current.image_url)
-                  ? { backgroundImage: `url(${current.image_url})` }
-                  : { background: tileGradient(openIndex!) }
-              }
-            />
+            <div className="relative h-[60vh] max-h-[520px] overflow-hidden rounded-xl shadow-[0_30px_80px_rgba(0,0,0,.5)]">
+              {hasRealImage(current.image_url) ? (
+                <Image
+                  src={current.image_url}
+                  alt={current.title}
+                  fill
+                  sizes="(max-width: 820px) 100vw, 820px"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="h-full w-full" style={{ background: tileGradient(openIndex!) }} />
+              )}
+            </div>
             <div className="mt-4 text-center text-[15px] text-[#c6d2e4]">{current.title}</div>
           </div>
 

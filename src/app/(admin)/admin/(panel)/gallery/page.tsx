@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { AdminHeader } from '@/components/admin/AdminHeader';
@@ -49,8 +50,13 @@ export default async function AdminGalleryPage() {
                 {/* Thumbnail — real image when available, else a captioned gradient tile */}
                 <div className="relative h-40 w-full">
                   {hasRealImage(img.image_url) ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={img.image_url} alt={img.title} className="h-full w-full object-cover" />
+                    <Image
+                      src={img.image_url}
+                      alt={img.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
+                    />
                   ) : (
                     <div
                       className="flex h-full w-full items-center justify-center px-4 text-center font-head text-sm font-semibold text-white"
