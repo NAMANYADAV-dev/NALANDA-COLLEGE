@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { Section, SectionHeading } from '@/components/ui/Section';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { CardRail, cardRailItem } from '@/components/ui/CardRail';
 import { Icon } from '@/components/ui/Icon';
+import { cn } from '@/lib/utils/cn';
 import { levelBadgeTone } from '@/features/courses/data';
 import type { Course } from '@/types/database.types';
 
@@ -26,13 +28,17 @@ export function AcademicStreams({ courses }: { courses: Course[] }) {
         <p className="mt-10 text-center text-muted">Programmes will be listed here soon.</p>
       ) : (
         <>
-          {/* Show only the first 6 on the home page; the rest live on /courses. */}
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Show only the first 6 on the home page; the rest live on /courses.
+              On phones the cards swipe horizontally instead of stacking. */}
+          <CardRail label="Courses" className="mt-10 sm:grid-cols-2 lg:grid-cols-3">
             {courses.slice(0, 6).map((course) => (
               <Link
                 key={course.id}
                 href={`/courses/${course.slug}`}
-                className="flex w-full flex-col items-start rounded-lg border border-border bg-surface p-6 text-left shadow-card transition-transform duration-150 hover:-translate-y-1 hover:shadow-card-hover"
+                className={cn(
+                  cardRailItem,
+                  'flex flex-col items-start rounded-lg border border-border bg-surface p-6 text-left shadow-card transition-transform duration-150 hover:-translate-y-1 hover:shadow-card-hover',
+                )}
               >
                 <Badge tone={levelBadgeTone(course.level)}>{course.level}</Badge>
                 <h3 className="mb-1 mt-3.5 font-head text-xl font-semibold text-text">{course.name}</h3>
@@ -42,7 +48,7 @@ export function AcademicStreams({ courses }: { courses: Course[] }) {
                 </span>
               </Link>
             ))}
-          </div>
+          </CardRail>
 
           {courses.length > 6 && (
             <div className="mt-9 flex justify-center">

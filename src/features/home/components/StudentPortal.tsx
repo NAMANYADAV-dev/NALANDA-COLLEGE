@@ -1,6 +1,8 @@
+import { CardRail, cardRailItem } from '@/components/ui/CardRail';
 import { Section, SectionHeading } from '@/components/ui/Section';
 import { Icon, SvgGlyph } from '@/components/ui/Icon';
 import { PORTAL_ITEMS } from '@/features/home/data';
+import { cn } from '@/lib/utils/cn';
 
 /**
  * StudentPortal — quick links to the affiliated university's exam services.
@@ -20,14 +22,18 @@ export function StudentPortal({ links }: { links?: Record<string, string> }) {
           </>
         }
       />
-      <div className="mt-9 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Six shortcut cards stack very tall on a phone — swipe them instead. */}
+      <CardRail label="Student portal links" className="mt-9 sm:grid-cols-2 lg:grid-cols-3">
         {PORTAL_ITEMS.map((item) => (
           <a
             key={item.label}
             href={links?.[item.key] || item.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col rounded-[10px] border border-border bg-surface p-6 shadow-card transition-transform duration-150 hover:-translate-y-1 hover:shadow-card-hover"
+            className={cn(
+              cardRailItem,
+              'flex flex-col rounded-[10px] border border-border bg-surface p-6 shadow-card transition-transform duration-150 hover:-translate-y-1 hover:shadow-card-hover',
+            )}
           >
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-section-alt text-navy dark:text-gold-hi">
               <SvgGlyph d={item.icon} size={24} />
@@ -39,7 +45,7 @@ export function StudentPortal({ links }: { links?: Record<string, string> }) {
             </span>
           </a>
         ))}
-      </div>
+      </CardRail>
     </Section>
   );
 }
