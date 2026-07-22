@@ -38,8 +38,8 @@ export const siteConfig = {
    * Each usage falls back gracefully until the file exists.
    */
   images: {
-    hero: '/images/hero.png', // Home hero background
-    universityLogo: '/images/university-logo.svg', // About → affiliation banner
+    hero: '/images/hero.jpg', // Home hero background
+    universityLogo: '/images/university-logo.png', // About → affiliation banner
     principal: '/images/principal.jpg', // About → principal's message
     ogImage: '/images/og-image.jpg', // Social share / link preview
   },

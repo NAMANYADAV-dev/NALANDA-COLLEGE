@@ -23,7 +23,9 @@ export function Hero() {
           fill
           priority
           sizes="100vw"
-          quality={72}
+          // The readability overlay above hides compression artefacts, so the
+          // hero can afford a lower quality — smaller LCP bytes for free.
+          quality={60}
           className="object-cover"
         />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(100deg,rgba(11,20,38,.92)_0%,rgba(18,41,77,.82)_42%,rgba(18,41,77,.28)_100%)]" />
