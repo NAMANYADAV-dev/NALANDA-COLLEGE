@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { isSupabaseConfigured } from '@/lib/supabase/env';
@@ -33,8 +34,12 @@ function ensureSlug(course: Course): Course {
  * All published courses, ordered for display. Returns seed samples only when
  * Supabase isn't configured; once it is, returns the database exactly (an empty
  * table yields an empty list, never the samples).
+ *
+ * Wrapped in React `cache()` so multiple callers in one render pass (the home
+ * page's course rail, the sitemap, generateStaticParams) share a single DB
+ * round-trip instead of each issuing their own.
  */
-export async function getPublishedCourses(): Promise<Course[]> {
+export const getPublishedCourses = cache(async (): Promise<Course[]> => {
   if (!isSupabaseConfigured()) return COURSES_FALLBACK;
   try {
     const supabase = createPublicSupabaseClient(); // no cookies → page stays cacheable
@@ -50,7 +55,7 @@ export async function getPublishedCourses(): Promise<Course[]> {
     console.warn('[courses] read failed:', (err as Error).message);
     return [];
   }
-}
+});
 
 /**
  * All courses including unpublished — for the admin list. No seed fallback:
@@ -93,8 +98,13 @@ export async function getCourseById(id: string): Promise<Course | null> {
  *
  * `maybeSingle()` (not `single()`) because "no such course" is an ordinary
  * outcome here — a stale link or a typo — not a database error worth logging.
+ *
+ * Wrapped in React `cache()`: the detail page reads this once in
+ * generateMetadata() and again in the component, for the same slug in the same
+ * request. Without caching that's two identical DB queries per page view; with
+ * it, the second call is served from the first's result.
  */
-export async function getPublishedCourseBySlug(slug: string): Promise<Course | null> {
+export const getPublishedCourseBySlug = cache(async (slug: string): Promise<Course | null> => {
   if (!isSupabaseConfigured()) {
     return COURSES_FALLBACK.find((c) => c.slug === slug) ?? null;
   }
@@ -117,7 +127,7 @@ export async function getPublishedCourseBySlug(slug: string): Promise<Course | n
     const all = await getPublishedCourses();
     return all.find((c) => c.slug === slug) ?? null;
   }
-}
+});
 
 /**
  * Slugs of every published course — feeds generateStaticParams() so each course

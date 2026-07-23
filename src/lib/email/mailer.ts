@@ -16,7 +16,7 @@ export function isEmailConfigured(): boolean {
   return Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
 }
 
-// Reuse one transport across requests (connection pooling).
+// Reuse one transport across requests, with a real connection pool underneath.
 let transporter: Transporter | null = null;
 function getTransport(): Transporter {
   if (!transporter) {
@@ -26,6 +26,16 @@ function getTransport(): Transporter {
       port,
       secure: port === 465, // 465 = implicit TLS; 587 = STARTTLS
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+      // Pool persistent SMTP connections instead of opening one per email. Under
+      // a burst (e.g. an admission-day rush of enquiries) this reuses a few open
+      // sockets rather than doing a TLS handshake every time.
+      pool: true,
+      maxConnections: 3, // keep well under a typical provider's per-account cap
+      maxMessages: 100, // recycle a connection after N sends (avoids staleness)
+      // Cap outgoing rate so a burst doesn't trip provider throttling: at most
+      // 5 messages per 1s window. Nodemailer queues the rest and drains steadily.
+      rateDelta: 1000,
+      rateLimit: 5,
     });
   }
   return transporter;
