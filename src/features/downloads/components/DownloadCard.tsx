@@ -18,10 +18,18 @@ export function DownloadCard({ download: d }: { download: Download }) {
       rel={hasFile ? 'noopener noreferrer' : undefined}
       className={cn(
         'flex items-center gap-4 rounded-lg border border-border bg-surface p-5 shadow-card transition-transform duration-150',
-        hasFile ? 'hover:-translate-y-1 hover:shadow-card-hover' : 'cursor-default opacity-70',
+        hasFile ? 'hover:-translate-y-1 hover:shadow-card-hover' : 'cursor-default',
       )}
     >
-      <div className="flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[10px] bg-section-alt text-navy dark:text-gold-hi">
+      {/* A placeholder (no file yet) is signalled by dimming the icon only —
+          not the whole card. Fading the text via opacity drops `text-muted`
+          below the WCAG AA contrast ratio (verified by the axe a11y gate). */}
+      <div
+        className={cn(
+          'flex h-[46px] w-[46px] flex-none items-center justify-center rounded-[10px] bg-section-alt text-navy dark:text-gold-hi',
+          !hasFile && 'opacity-60',
+        )}
+      >
         <Icon name="file-down" size={22} />
       </div>
       <div className="min-w-0">
