@@ -19,6 +19,10 @@ Isse ek hi baar me: 6 tables + 3 enums + saari RLS security policies + indexes +
 
    `0001` har logged-in user ko admin maan leta hai. Supabase me signup by default ON hota hai, matlab koi bhi banda register karke poora content delete kar sakta hai. `0002` ek `admins` allow-list bana deta hai — sirf usme jinke naam hain wahi kuch likh sakte hain. Iske baad file ke last me diya **"SEED THE FIRST ADMIN"** wala snippet apne email ke saath run karna zaroori hai, warna admin panel me login toh hoga par kuch save nahi hoga.
 
+6. **`0003_course_slugs.sql` bhi Run karo.** Course detail pages (`/courses/bsc-physics` jaisi URLs) ke liye slug column banata hai aur purane courses ke liye auto-fill kar deta hai.
+
+7. **`0004_login_throttle.sql` bhi Run karo.** Login brute-force protection — ek IP se 15 minute me 8 galat password ke baad login temporarily block ho jata hai. (Ye na ho toh app phir bhi chalega — throttle bas skip ho jayega.)
+
 > Sample data bhi chahiye? Uske baad `supabase/seed.sql` ko bhi isi tarah Run kar do (6 courses, 8 faculty, 7 notices, 9 gallery, 4 downloads aa jayenge). Ye optional hai — chaho toh apna data admin panel se daalna.
 
 Neeche di gayi table-by-table detail sirf **samajhne ke liye** hai (agar tum manually Table Editor se banana chahte ho, ya verify karna chahte ho ki sab sahi bana).
