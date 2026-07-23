@@ -1,5 +1,6 @@
 'use server';
 
+import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { requireAdmin } from '@/features/admin/auth/session';
@@ -78,8 +79,22 @@ export async function submitEnquiry(
       };
     }
 
-    // Best-effort admin notification — must never affect the saved enquiry.
-    await notifyNewEnquiry(values).catch(() => {});
+    // Admin notification runs AFTER the response is sent, so the visitor never
+    // waits on the SMTP round-trip (~1–3s). Under a burst of submissions this
+    // is what keeps every form snappy and avoids the email send throttling the
+    // request itself.
+    //
+    // `after()` (not a bare un-awaited promise) is deliberate: on serverless the
+    // function can freeze the moment it returns, killing an in-flight email.
+    // `after()` keeps it alive until the callback settles. Still best-effort —
+    // a failed notification must never fail the enquiry that was just saved.
+    after(async () => {
+      try {
+        await notifyNewEnquiry(values);
+      } catch (err) {
+        console.error('[enquiries] notify failed:', (err as Error).message);
+      }
+    });
 
     return { status: 'success' };
   } catch (err) {
