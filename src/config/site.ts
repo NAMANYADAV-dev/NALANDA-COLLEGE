@@ -21,8 +21,8 @@ export const siteConfig = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
 
   contact: {
-    address: 'College Road, District Centre, State 400001',
-    phone: '+91 98765 43210',
+    address: 'Milkipur, Ayodhya, Uttar Pradesh',
+    phone: '+91 98780 91649',
     email: 'info@nalandacollege.edu.in',
   },
 

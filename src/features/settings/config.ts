@@ -54,8 +54,8 @@ export const SETTING_GROUPS: SettingGroup[] = [
     description: 'Shown in the footer and on the contact page.',
     fields: [
       { key: 'contact_email', label: 'Email', type: 'text', placeholder: 'info@nalandacollege.edu.in', fallback: siteConfig.contact.email },
-      { key: 'contact_phone', label: 'Phone', type: 'text', placeholder: '+91 98765 43210', fallback: siteConfig.contact.phone },
-      { key: 'contact_address', label: 'Address', type: 'text', placeholder: 'College Road, District Centre, State 400001', fallback: siteConfig.contact.address },
+      { key: 'contact_phone', label: 'Phone', type: 'text', placeholder: '+91 98780 91649', fallback: siteConfig.contact.phone },
+      { key: 'contact_address', label: 'Address', type: 'text', placeholder: 'Milkipur, Ayodhya, Uttar Pradesh', fallback: siteConfig.contact.address },
     ],
   },
   {
